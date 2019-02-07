@@ -1,0 +1,11 @@
+<result>
+<!--{def has_contents}-->
+	<template type="text/html" action="{val action}">{CDATA contents}</template>
+<!--{/def}-->
+<!--{each params}-->
+	<{val params/key}>{val params/data}</{val params/key}>
+<!--{/each}-->
+<!--{each script}-->
+	<script event="{val script/event}">{val script/src}</script>
+<!--{/each}-->
+</result>
