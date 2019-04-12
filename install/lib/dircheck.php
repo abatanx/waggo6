@@ -8,20 +8,20 @@
 function install_dirinfo()
 {
 	$dirinfo =
-		array(	"installer"		=>	realpath(dirname(__FILE__)."/../install.php"),
-				"install"		=>	realpath(dirname(__FILE__)."/.."),
-				"waggo"			=>	realpath(dirname(__FILE__)."/../.."),
-				"sys"			=>	realpath(dirname(__FILE__)."/../../.."),
-				"inc"			=>	realpath(dirname(__FILE__)."/../../..")."/include",
-				"application"	=>	realpath(dirname(__FILE__)."/../../../.."),
-				"pub"			=>	realpath(dirname(__FILE__)."/../../../..")."/pub",
-				"tpl"			=>	realpath(dirname(__FILE__)."/../../../..")."/tpl",
-				"upload"		=>	realpath(dirname(__FILE__)."/../../../..")."/upload",
-				"config"		=>	realpath(dirname(__FILE__)."/../../..")."/config",
-				"resources"		=>	realpath(dirname(__FILE__)."/../../../..")."/resources",
-				"temporary"		=>	realpath(dirname(__FILE__)."/../../../..")."/temporary",
-				"logs"			=>	realpath(dirname(__FILE__)."/../../../..")."/logs",
-				"inittpl"		=>	realpath(dirname(__FILE__)."/../..")."/initdata/tpl"
+		array(	'installer'		=>	realpath( __DIR__ .'/../install.php'),
+				'install'		=>	realpath( __DIR__ .'/..'),
+				'waggo'			=>	realpath( __DIR__ .'/../..'),
+				'sys'			=>	realpath( __DIR__ .'/../../..'),
+				'inc'			=>	realpath( __DIR__ .'/../../..').'/include',
+				'application'	=>	realpath( __DIR__ .'/../../../..'),
+				'pub'			=>	realpath( __DIR__ .'/../../../..').'/pub',
+				'tpl'			=>	realpath( __DIR__ .'/../../../..').'/tpl',
+				'upload'		=>	realpath( __DIR__ .'/../../../..').'/upload',
+				'config'		=>	realpath( __DIR__ .'/../../..').'/config',
+				'resources'		=>	realpath( __DIR__ .'/../../../..').'/resources',
+				'temporary'		=>	realpath( __DIR__ .'/../../../..').'/temporary',
+				'logs'			=>	realpath( __DIR__ .'/../../../..').'/logs',
+				'inittpl'		=>	realpath( __DIR__ .'/../..').'/initdata/tpl'
 		)
 	;
 

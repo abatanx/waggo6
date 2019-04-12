@@ -5,9 +5,9 @@
  * @license MIT
  */
 
-require_once(dirname(__FILE__)."/dircheck.php");
-require_once(dirname(__FILE__)."/gencontroller.php");
-
+require_once __DIR__ . '/dircheck.php';
+require_once __DIR__ . '/gencontroller.php';
+require_once __DIR__ . '/detect.php';
 
 function file_waggoconf()
 {
@@ -30,10 +30,10 @@ define( 'WG_LOGTYPE'						,	0 );
 define( 'WG_ENCODING'						,	mb_internal_encoding() );
 
 define( 'WGCONF_DIR_ROOT'					,	WG_INSTALLDIR );
-define( 'WGCONF_DIR_WAGGO'					,	realpath(dirname(__FILE__).'/../waggo6'));
-define( 'WGCONF_DIR_PUB'					,	realpath(dirname(__FILE__).'/../../pub'));
-define( 'WGCONF_DIR_SYS'					,	realpath(dirname(__FILE__).'/../../sys'));
-define( 'WGCONF_DIR_TPL'					,	realpath(dirname(__FILE__).'/../../tpl'));
+define( 'WGCONF_DIR_WAGGO'					,	realpath( __DIR__ . '/../waggo6'));
+define( 'WGCONF_DIR_PUB'					,	realpath( __DIR__ . '/../../pub'));
+define( 'WGCONF_DIR_SYS'					,	realpath( __DIR__ . '/../../sys'));
+define( 'WGCONF_DIR_TPL'					,	realpath( __DIR__ . '/../../tpl'));
 define( 'WGCONF_CANVASCACHE'				,	WG_INSTALLDIR.'/temporary');
 define( 'WGCONF_DIR_UP'						,	WG_INSTALLDIR.'/upload');
 define( 'WGCONF_DIR_RES'					,	WG_INSTALLDIR.'/resources');
@@ -70,7 +70,7 @@ define( 'WGCONF_DBMS_PORT'					,	5432 );
 define( 'WGCONF_DBMS_DB'					,	'' );
 define( 'WGCONF_DBMS_USER'					,	'' );
 define( 'WGCONF_DBMS_PASSWD'				,	'' );
-define( 'WGCONF_URLBASE'					,	'http://{\$_SERVER[SERVER_NAME]}' );
+define( 'WGCONF_URLBASE'					,	"http://{\$_SERVER[SERVER_NAME]}" );
 
 define( 'WGCONF_GOOGLEMAPS_X'				,	139.767073 );
 define( 'WGCONF_GOOGLEMAPS_Y'				,	35.681304 );
@@ -83,7 +83,7 @@ define( 'WGCONF_PASSWORD_HASHKEY'			,	'' );
 
 global \$WGCONF_AUTOLOAD;
 \$WGCONF_AUTOLOAD = array(
-	WGCONF_DIR_FRAMEWORK_VIEW5,
+	WGCONF_DIR_FRAMEWORK_VIEW6,
 	WGCONF_DIR_FRAMEWORK_GAUNTLET,
 	WGCONF_DIR_FRAMEWORK_MODEL,
 	WGCONF_DIR_FRAMEWORK_EXT,
@@ -190,6 +190,18 @@ function replace_waggoconf($filename,$dat)
 				case 'WGCONF_PASSWORD_HASHKEY':
 					$line = sprintf("define%s%s%s'%s' ); {$edmsg}", $m[1],$m[2],$m[3],addsingleslashes($dat["hash"]["password_hashkey"]));
 					break;
+				case 'WGCONF_PHPCLI':
+					$line = sprintf("define%s%s%s\"%s\" ); {$edmsg}", $m[1],$m[2],$m[3],addslashes($dat["executable"]["phpcli"]));
+					break;
+				case 'WGCONF_CONVERT':
+					$line = sprintf("define%s%s%s\"%s\" ); {$edmsg}", $m[1],$m[2],$m[3],addslashes($dat["executable"]["convert"]));
+					break;
+				case 'WGCONF_FFMPEG':
+					$line = sprintf("define%s%s%s\"%s\" ); {$edmsg}", $m[1],$m[2],$m[3],addslashes($dat["executable"]["ffmpeg"]));
+					break;
+				case 'WGCONF_PEAR':
+					$line = sprintf("define%s%s%s\"%s\" ); {$edmsg}", $m[1],$m[2],$m[3],addslashes($dat["pear"]["dir"]));
+					break;
 			}
 		}
 		$newconf .= rtrim($line) . "\n";
@@ -216,13 +228,13 @@ function install_instinfo()
 {
 	// データファイル検索
 	$infs = array();
-	$dir  = realpath(dirname(__FILE__)."/..");
+	$dir  = realpath( __DIR__ . '/..' );
 	$handle = opendir($dir);
 	$id   = 1;
 	while( ($file = readdir($handle))!==false )
 	{
-		if($file==="." || $file==="..") continue;
-		if(preg_match('/\.dat$/',$file))
+		if( $file==='.' || $file==='..' ) continue;
+		if( preg_match('/\.dat$/',$file) )
 		{
 			$datfile = "{$dir}/{$file}";
 			$infs[$id++] = array($file, $datfile, parse_ini_file($datfile,true));
@@ -252,25 +264,60 @@ function install_instinfo()
 	// デフォルト値生成
 	$inf = ($id==0) ?
 		array(
-			"postgresql" =>
-				array("host"=>"localhost", "dbname"=>"waggo", "username"=>"waggo", "password"=>"password"),
-			"app" =>
-				array("email"=>"root@localhost"),
-			"hash" =>
-				array("general_hashkey"=>install_gen_hash(), "password_hashkey"=>install_gen_hash() )
+			'domain' =>
+				array(
+					'domain'   => '127.0.0.1'
+				),
+			'app' =>
+				array(
+					'prefix'   => 'App',
+					'email'    => 'root@localhost'
+				),
+			'executable' =>
+				array(
+					'phpcli'   => detect_phpcli(),
+					'convert'  => detect_convert(),
+					'ffmpeg'   => detect_ffmpeg()
+				),
+			'pear' =>
+				array(
+					'dir'      => detect_pear()
+				),
+			'postgresql' =>
+				array(
+					'host'     => 'localhost',
+					'dbname'   => 'waggo',
+					'username' => 'waggo',
+					'password' => 'password'
+				),
+			'app' =>
+				array(
+					'email'    => 'root@localhost'
+				),
+			'hash' =>
+				array(
+					'general_hashkey'  => install_gen_hash(),
+					'password_hashkey' => install_gen_hash()
+				)
 		) : $infs[$id][2] ;
 
 	// データ入力
 	$settings = array(
-		array("domain","domain",			"このフレームワークで構築するサイトのドメイン名",				"127.0.0.1"),
-		array("app","prefix",				"このフレームワークで構築するコントローラ等に付与する接頭句",	"IF"),
-		array("app","email",				"連絡先メールアドレス",										"root@localhost"),
-		array("postgresql","host",			"DB サーバアドレス",			"localhost"),
-		array("postgresql","dbname",		"DB データベース名",			"waggo"),
-		array("postgresql","username",		"DB 接続ユーザ名",				"waggo"),
-		array("postgresql","password",		"DB 接続パスワード",			"password"),
-		array("hash","general_hashkey",		"汎用ハッシュキー",				"通常は自動生成されています"),
-		array("hash","password_hashkey",	"パスワード用ハッシュキー",		"通常は自動生成されています")
+		array('domain','domain',			'このフレームワークで構築するサイトのドメイン名',
+			'127.0.0.1'),
+		array('app','prefix',				'このフレームワークで構築するコントローラ等に付与する接頭句',
+			'App'),
+		array('app','email',				'連絡先メールアドレス',			'root@localhost'),
+		array('executable','phpcli',		'PHP(CLI)',						detect_phpcli()),
+		array('pear','dir',					'PEAR',							detect_pear()),
+		array('executable','convert',		'convert(ImageMagick)',			detect_convert()),
+		array('executable','ffmpeg',		'ffmpeg',						detect_ffmpeg()),
+		array('postgresql','host',			'DB サーバアドレス',			'localhost'),
+		array('postgresql','dbname',		'DB データベース名',			'waggo'),
+		array('postgresql','username',		'DB 接続ユーザ名',				'waggo'),
+		array('postgresql','password',		'DB 接続パスワード',			'password'),
+		array('hash','general_hashkey',		'汎用ハッシュキー',				'通常は自動生成されています'),
+		array('hash','password_hashkey',	'パスワード用ハッシュキー',		'通常は自動生成されています')
 	);
 	foreach($settings as $setting)
 	{
@@ -302,17 +349,17 @@ function install_instinfo()
 
 	// 設定ファイルの作成
 	$dirinfo    = install_dirinfo();
-	$domain     = $inf["domain"]["domain"];
-	$waggoconf  = $dirinfo["config"]."/waggo.{$domain}.php";
-	$apacheconf = $dirinfo["config"]."/apache-vhosts.{$domain}.conf";
-	$appconf    = $dirinfo["sys"]."/config.php";
+	$domain     = $inf['domain']['domain'];
+	$waggoconf  = $dirinfo['config']."/waggo.{$domain}.php";
+	$apacheconf = $dirinfo['config']."/apache-vhosts.{$domain}.conf";
+	$appconf    = $dirinfo['sys'].'/config.php';
 
 	if(!file_exists($waggoconf)) file_put_contents($waggoconf, file_waggoconf());
 	file_put_contents($apacheconf, file_apache($domain, $dirinfo["application"], $inf["app"]["email"] ));
 	if(!file_exists($appconf))   file_put_contents($appconf, file_conf());
 
 	// 初期テンプレートの複写
-	$tpls = array("abort.html", "iroot.html", "mail.txt", "null.html", "pcroot.html", "pcroot.xml");
+	$tpls = array('abort.html', 'iroot.html', 'mail.txt', 'null.html', 'pcroot.html', 'pcroot.xml');
 	foreach($tpls as $name)
 	{
 		$src = "{$dirinfo['inittpl']}/{$name}";

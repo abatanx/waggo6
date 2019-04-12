@@ -5,23 +5,27 @@
  * @license MIT
  */
 
-function t_cls()
+function cls()
 {
 	echo "\x1b[2J\x1b[1;1H";
 }
 
-function t_locate($x,$y)
+function locate($x,$y)
 {
-	$x++;
-	$y++;
-	echo "\x1b[{$y};{$x}H";
+	printf("\x1b[%d;%dH", $y+1, $x+1);
+}
+
+function stdin()
+{
+	$in = fgets(STDIN);
+	return $in !== false ? trim($in) : die("\n");
 }
 
 function q($msg,$a=array())
 {
 	do {
 		echo $msg;
-		$s = trim(fgets(STDIN));
+		$s = stdin();
 	}
 	while(!in_array($s,$a));
 	return $s;
@@ -30,21 +34,20 @@ function q($msg,$a=array())
 function a($msg)
 {
 	echo $msg;
-	fgets(STDIN);
+	stdin();
 }
 
 function in($msg)
 {
 	echo $msg;
-	$s = trim(fgets(STDIN));
-	return $s;
+	return stdin();
 }
 
 function indef($msg,$default,$require)
 {
 	do {
 		echo $msg;
-		$s = trim(fgets(STDIN));
+		$s = stdin();
 		$r = empty($s) ? $default : $s;
 	}
 	while($require && empty($r));

@@ -5,5 +5,5 @@
  * @license MIT
  */
 
-require_once(dirname(__FILE__)."/dircheck.php");
+require_once __DIR__ . '/dircheck.php';
 

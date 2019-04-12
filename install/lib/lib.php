@@ -7,7 +7,7 @@
 
 function detect_waggo_version()
 {
-	$cs = file(dirname(__FILE__)."/../../waggo.php");
+	$cs = file( __DIR__ . '/../../waggo.php' );
 	foreach($cs as $c) if(preg_match('/^\s*define/',$c)) eval($c);
 	return array(
 		"version"		=>	WG_VERSION,
