@@ -33,7 +33,7 @@ class WGMail
 	{
 		$addr = $from;
 		if ($nickname != "") {
-			$addr = mb_encode_mimeheader($nickname,"iso-2022-jp") . sprintf("<%s>", $addr);
+			$addr = sprintf('"%s"<%s>', mb_encode_mimeheader($nickname,"iso-2022-jp"), $addr);
 		}
 		$this->mail_from = $addr;
 		return $this;

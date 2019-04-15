@@ -22,7 +22,6 @@ class WGMailParser
 
 		$this->headers          = array();
 		$this->content_type     = "";
-		$this->content_subtype  = "";
 		$this->content_encoding = "iso-2022-jp";
 		$this->content_charset  = "iso-2022-jp";
 		$this->content_params   = array();
@@ -53,9 +52,7 @@ class WGMailParser
 				case "content-type":
 					$p                     = explode( ";", $hv );
 					$d                     = array_shift( $p );
-					$s                     = explode( "/", $d );
-					$this->content_type    = strtolower( trim( $s[0] ) );
-					$this->content_subtype = strtolower( trim( $s[1] ) );
+					$this->content_type    = strtolower( trim($d) );
 					$this->content_params  = array();
 					foreach ( $p as $d )
 					{
@@ -131,8 +128,9 @@ class WGMailParser
 
 
 		// マルチパート解析
-		if ( $this->content_type == "multipart" )
+		if ( $this->content_type == "multipart/form-data" )
 		{
+			$boundary = isset($this->content_params['boundary']) ? $this->content_params['boundary'] : '';
 			$bounding_array = explode( "--" . $boundary, $this->body );
 			$result         = array();
 			foreach ( $bounding_array as $id => $bounding_body )
@@ -142,8 +140,8 @@ class WGMailParser
 					continue;
 				}
 
-				$bbody = new WGMailParser( $bounding_body );
-				$r     = $bbody->analyze();
+				$boundary_body = new WGMailParser( $bounding_body );
+				$r = $boundary_body->analyze();
 				foreach ( $r as $key => $body )
 				{
 					$result[] = $body;
@@ -157,13 +155,13 @@ class WGMailParser
 		if ( $this->content_encoding == "base64" )
 		{
 			$body    = base64_decode( $this->body );
-			$subject = iconv_mime_decode( $this->subject );
 		}
 		else
 		{
 			$body    = $this->body;
-			$subject = $this->subject;
 		}
+
+		$subject = iconv_mime_decode( $this->subject );
 
 		/*  Content-Type チェック */
 		switch ( $this->content_type )
@@ -191,6 +189,8 @@ class WGMailParser
 				$ext  = "html";
 				$body = strip_tags( mb_convert_encoding( $body, "utf-8", $this->content_charset ) );
 				break;
+			default:
+				$ext  = "txt";
 		}
 
 		$this->body    = $body;
@@ -227,6 +227,6 @@ class WGMailParser
 
 	public function content_type()
 	{
-		return $this->content_type . "/" . $this->content_subtype;
+		return $this->content_type;
 	}
 }
