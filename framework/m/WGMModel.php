@@ -483,7 +483,7 @@ class WGMModel
 	 */
 	public function addCondition($where)
 	{
-		if( isset($this->uniqueids['cond']) ) $this->uniqueids['cond'] = 0;
+		if( !isset($this->uniqueids['cond']) ) $this->uniqueids['cond'] = 0;
 		$key = sprintf('cond-%d', $this->uniqueids['cond'] ++);
 		$this->conditions[$key] = $this->expansion($where);
 		return $key;
