@@ -107,7 +107,7 @@ abstract class WGFController
 	 */
 	protected function getKeySeq($prefix)
 	{
-		if( isset($this->keyseq[$prefix]) ) $this->keyseq[$prefix] = 100000;
+		if( !isset($this->keyseq[$prefix]) ) $this->keyseq[$prefix] = 100000;
 		return sprintf("%s%d", $prefix, $this->keyseq[$prefix]++ );
 	}
 
