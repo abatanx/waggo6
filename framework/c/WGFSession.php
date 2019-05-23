@@ -66,7 +66,7 @@ class WGFSession
 	public function setId($sessionid,$transactionid) {
 		$this->sessionid     = $sessionid;
 		$this->transactionid = $transactionid;
-		if(!is_array($_SESSION[$this->sessionid][$this->transactionid]))
+		if(!isset($_SESSION[$this->sessionid][$this->transactionid]) || !is_array($_SESSION[$this->sessionid][$this->transactionid]))
 			$_SESSION[$this->sessionid][$this->transactionid] = array();
 
 		$_SESSION[$this->sessionid][$this->transactionid]["%atime"] = time();
@@ -130,7 +130,8 @@ class WGFSession
 	 */
 	public function get($key)
 	{
-		$val = $_SESSION[$this->sessionid][$this->transactionid][$key];
+		$val = null;
+		if (isset($_SESSION[$this->sessionid][$this->transactionid][$key])) $val = $_SESSION[$this->sessionid][$this->transactionid][$key];
 		if(WG_SESSIONDEBUG) wg_log("SESSION get '$key' = '$val'");
 		return $val;
 	}

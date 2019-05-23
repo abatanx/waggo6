@@ -36,7 +36,7 @@ wg_log("** REQUEST_URI     = [{$_SERVER['REQUEST_URI']}]");
 wg_log("** REQUEST_METHOD  = [{$_SERVER['REQUEST_METHOD']}] {$_SERVER['SERVER_PROTOCOL']}");
 wg_log("** HTTP_USER_AGENT = [{$_SERVER['HTTP_USER_AGENT']}]");
 wg_log("** REMOTE          = [{$_SERVER['REMOTE_ADDR']}:{$_SERVER['REMOTE_PORT']}]");
-if(is_array($argv)) wg_log("** ARGV            = ".implode(" ",$argv));
+if(isset($argv) && is_array($argv)) wg_log("** ARGV            = ".implode(" ",$argv));
 
 wg_log("[[ Loaded   framework config : {$wconffile}) ]]");
 

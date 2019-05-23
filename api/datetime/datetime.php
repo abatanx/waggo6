@@ -91,7 +91,7 @@ function wg_update_datetime(&$dd)
 
 /**
  * 日付・時間チェック及び西暦変換を行う。
- * @param int $g 元号(0:西暦,1:明治,2:大正,3:昭和,4:平成)
+ * @param int $g 元号(0:西暦,1:明治,2:大正,3:昭和,4:平成,5:令和)
  * @param int $yy 年(1..2100)
  * @param int $mm 月(1..12)
  * @param int $dd 日(1..31)
@@ -116,7 +116,9 @@ function wg_check_datetime( $g,$yy,$mm,$dd,$hh=0,$nn=0,$ss=0 )
 	1  =>array(10908,450729,1867),
 	2  =>array(10730,151214,1911),
 	3  =>array(11225,640107,1925),
-	4  =>array(10108,991231,1988) );
+	4  =>array(10108,310430,1988),
+	5  =>array(10501,991231,2019)
+	);
 
 	foreach( $dd as $k=>$d ) if( !is_numeric($d) || $d<$mm[$k][0] || $d>$mm[$k][1] ) return false;
 
@@ -167,8 +169,8 @@ function wg_split_datetime($ymdhns,$is_check=true)
  */
 function wg_split_date($ymd)
 {
-	$gt = array("m"=>1,"t"=>2,"s"=>3,"h"=>4,"M"=>1,"T"=>2,"S"=>3,"h"=>4,
-		"明治"=>1,"大正"=>2,"昭和"=>3,"平成"=>4,"明"=>1,"大"=>2,"昭"=>3,"平"=>4);
+	$gt = array("m"=>1,"t"=>2,"s"=>3,"h"=>4,"r"=>5,"M"=>1,"T"=>2,"S"=>3,"H"=>4,"R"=>5,
+		"明治"=>1,"大正"=>2,"昭和"=>3,"平成"=>4,"令和"=>5,"明"=>1,"大"=>2,"昭"=>3,"平"=>4,"令"=>5);
 	$d = array("g"=>0,"yy"=>0,"mm"=>0,"dd"=>0);
 	if(preg_match('/^(\d+)[\/\-\.](\d+)[\/\-\.](\d+)$/',$ymd,$match) )
 	{

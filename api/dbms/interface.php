@@ -182,6 +182,13 @@ function _T($t,$allow_nl=true)   {return ($d=_QC()) ? $d->T($t,$allow_nl):die();
 function _P($pos,$allow_nl=true) {return ($d=_QC()) ? $d->P($pos,$allow_nl):die(); }
 
 /**
+ * 書式付きSQL発行用に、バイナリデータを文字列に変換する。
+ * @param $raw
+ * @param bool $allow_nl
+ */
+function _BLOB($raw,$allow_nl=true) {return ($d=_QC()) ? $d->BLOB($raw,$allow_nl):die(); }
+
+/**
  * 書式付きSQL発行用に、現在ログイン中のユーザーIDを文字列に変換する。
  * @return string ユーザーIDの文字列。
  */

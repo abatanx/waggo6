@@ -804,9 +804,12 @@ class WGMModel
 			}
 			$n++;
 		}
-		foreach($m as $jm)
-		{
-			foreach($jm->getFields() as $k) $jm->setAssignedValue($k,$jm->avars[0][$k]);
+		foreach($m as $jm) {
+			if ( isset( $jm->avars[0] ) ) {
+				foreach ( $jm->getFields() as $k ) {
+					$jm->setAssignedValue( $k, $jm->avars[0][ $k ] );
+				}
+			}
 		}
 
 		return $this;

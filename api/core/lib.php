@@ -37,6 +37,17 @@ function wg_deplicated($is_forward,$func,$solver,$params=null)
 	if( $is_forward ) return call_user_func_array($solver, $params);
 }
 
+$wg_log_limit = -1;
+/**
+ * ログの1行あたりの文字数を制限する
+ * @param bool|int $limit 文字数 falseの場合は無制限。
+ */
+function wg_log_setlimit($limit = false)
+{
+	global $wg_log_limit;
+	$wg_log_limit = ($limit)? $limit : -1;
+}
+
 /**
  * ログに情報を出力する。
  * @param string $log ログ記録内容
@@ -63,6 +74,8 @@ function wg_log_write_error_log($log)
  */
 function wg_log_write($logtype,$msg)
 {
+	global $wg_log_limit;
+
 	if(WG_LOGFILE=="") return;
 
 	if(($logtype==WGLOG_INFO && WG_DEBUG==true ) ||
@@ -76,6 +89,10 @@ function wg_log_write($logtype,$msg)
 		$es2 = sprintf("\x1b[%dm", $wg_log_write_colors[2] + 30);
 		$es9 = "\x1b[m";
 
+		if ($wg_log_limit > 0) {
+			$limt = $wg_log_limit / 2;
+			$msg = substr($msg, 0, $limt) . ' ... ' . substr($msg, -$limt);
+		}
 		$msg = rtrim($msg);
 		$dd  = date("Ymd H:i:s");
 		$msg = str_replace("\0","\\0",$msg);	// NULL文字が入ると正常にロギングできない対処。

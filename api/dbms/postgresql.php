@@ -280,6 +280,19 @@ class WGDBMSPostgreSQL extends WGDBMS
 	}
 
 	/**
+	 * 書式付きSQL発行用に、バイナリデータを16進文字列に変換する
+	 * @param $raw
+	 * @param bool $anl
+	 *
+	 * @return string
+	 */
+	static public function BLOB($raw,$anl=true)
+	{
+		if($anl && (is_null($raw))) return "null";
+		return sprintf("'%s'", pg_escape_bytea($raw));
+	}
+
+	/**
 	 * SQLから返されたデータが同じかどうか比較します。
 	 * @param string $a 比較対象文字列１。
 	 * @param string $b 比較対象文字列２。

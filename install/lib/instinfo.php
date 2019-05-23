@@ -70,6 +70,7 @@ define( 'WGCONF_DBMS_PORT'					,	5432 );
 define( 'WGCONF_DBMS_DB'					,	'' );
 define( 'WGCONF_DBMS_USER'					,	'' );
 define( 'WGCONF_DBMS_PASSWD'				,	'' );
+define( 'WGCONF_DBMS_CA'					,	'');
 define( 'WGCONF_URLBASE'					,	"http://{\$_SERVER[SERVER_NAME]}" );
 
 define( 'WGCONF_GOOGLEMAPS_X'				,	139.767073 );
