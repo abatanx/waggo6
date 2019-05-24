@@ -71,7 +71,7 @@ define( 'WGCONF_DBMS_DB'					,	'' );
 define( 'WGCONF_DBMS_USER'					,	'' );
 define( 'WGCONF_DBMS_PASSWD'				,	'' );
 define( 'WGCONF_DBMS_CA'					,	'');
-define( 'WGCONF_URLBASE'					,	"http://{\$_SERVER[SERVER_NAME]}" );
+define( 'WGCONF_URLBASE'					,	"http://{\$_SERVER['SERVER_NAME']}" );
 
 define( 'WGCONF_GOOGLEMAPS_X'				,	139.767073 );
 define( 'WGCONF_GOOGLEMAPS_Y'				,	35.681304 );

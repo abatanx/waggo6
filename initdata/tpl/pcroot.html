@@ -28,7 +28,7 @@
 <!--{/each}-->
 <!--{/def}-->
 <script type="text/javascript" charset="utf-8">
-$(window).load(function()
+$(window).on('load', function()
 {
 <!--{each in_onload_functions}-->
 	{rval in_onload_functions/data}
@@ -36,7 +36,7 @@ $(window).load(function()
 <!--{/each}-->
 });
 
-$(window).unload(function()
+$(window).on('unload', function()
 {
 <!--{each in_onunload_functions}-->
 	{rval in_onunload_functions/data}
