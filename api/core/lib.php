@@ -213,3 +213,18 @@ function wg_nobr($s)
 {
 	return preg_replace('/[\r\n\t]/i' , '' , $s );
 }
+
+/**
+ * REMOTE IPアドレス取得
+ * @return mixed|string
+ */
+function wg_get_remote_adr()
+{
+	$addr = $_SERVER['REMOTE_ADDR'];
+	if (isset($_SERVER['HTTP_X_CLIENT_IP'])) {
+		// for Azure
+		$client = explode(',', $_SERVER['HTTP_X_CLIENT_IP']);
+		$addr = trim(array_shift($client));
+	}
+	return $addr;
+}

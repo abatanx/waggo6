@@ -225,7 +225,7 @@ class HtmlTemplate
 			$n=str_replace("/","_",$m);
 			$str2=str_replace("<!--{each $m}-->",
 					"<?php ".
-					"for(\$cnt[\"$n\"]=0;\$cnt[\"$n\"]<count(\$val$ind);\$cnt[\"$n\"]++){".
+					"for(\$cnt[\"$n\"]=0;is_array(\$val$ind) && \$cnt[\"$n\"]<count(\$val$ind);\$cnt[\"$n\"]++){".
 					" ?>", $str2);
 		}
 		reset($kuri);

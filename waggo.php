@@ -29,13 +29,14 @@ else require_once($wconffile);
 
 require_once(dirname(__FILE__)."/api/core/lib.php");
 
+$remote_adr = wg_get_remote_adr();
 wg_log("++ ".WG_NAME." ".WG_VERSION);
 wg_log("** PHP version     = [".phpversion()."]");
 wg_log("** Server          = [".php_uname("a")."]");
 wg_log("** REQUEST_URI     = [{$_SERVER['REQUEST_URI']}]");
 wg_log("** REQUEST_METHOD  = [{$_SERVER['REQUEST_METHOD']}] {$_SERVER['SERVER_PROTOCOL']}");
 wg_log("** HTTP_USER_AGENT = [{$_SERVER['HTTP_USER_AGENT']}]");
-wg_log("** REMOTE          = [{$_SERVER['REMOTE_ADDR']}:{$_SERVER['REMOTE_PORT']}]");
+wg_log("** REMOTE          = [{$remote_adr}:{$_SERVER['REMOTE_PORT']}]");
 if(isset($argv) && is_array($argv)) wg_log("** ARGV            = ".implode(" ",$argv));
 
 wg_log("[[ Loaded   framework config : {$wconffile}) ]]");

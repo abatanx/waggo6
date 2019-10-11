@@ -103,7 +103,7 @@ class WGMModel
 		$this->depconf = new stdClass();
 		if( $this->dbms instanceof WGDBMSPostgreSQL )
 		{
-			$this->depconf->N = '/^(int|smallint)/';
+			$this->depconf->N = '/^(int|smallint|bigint)/';
 			$this->depconf->T = '/^(date|timestamp)/';
 			$this->depconf->S = '/^(char|text|time|varchar|json)/';
 			$this->depconf->D = '/^(double|real|numeric)/';
@@ -154,7 +154,7 @@ class WGMModel
 		wg_log_write(WGLOG_FATAL, $s);
 	}
 
-	private function toFlatArray($a)
+	protected function toFlatArray($a)
 	{
 		$buf = [];
 		foreach($a as $v)
@@ -174,7 +174,7 @@ class WGMModel
 		else return false;
 	}
 
-	private function getOID($tablename)
+	protected function getOID($tablename)
 	{
 		if( $this->dbms instanceof WGDBMSPostgreSQL )
 		{
@@ -720,7 +720,7 @@ class WGMModel
 		return $k;
 	}
 
-	private function dumpKeys($keys)
+	protected function dumpKeys($keys)
 	{
 		foreach($keys as $k)
 		{

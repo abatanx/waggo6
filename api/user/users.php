@@ -59,7 +59,7 @@ function wg_is_admin($usercd=null)
 function wg_set_login($usercd)
 {
 	$_SESSION["_sUID"]   = $usercd;
-	$_SESSION["_sRHOST"] = $_SERVER["REMOTE_ADDR"];
+	$_SESSION["_sRHOST"] = wg_get_remote_adr();
 }
 
 /**
