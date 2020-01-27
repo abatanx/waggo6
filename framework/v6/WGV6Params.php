@@ -19,7 +19,7 @@ class WGV6Params
 
 	public function toString() {
 		$tmp = $this->params;
-		$tmp["style"] .= $this->errstyle;	// errだけ別枠。
+		if( isset($tmp["style"]) ) $tmp["style"] .= $this->errstyle;	// errだけ別枠。
 		if(empty($tmp["style"])) unset($tmp["style"]);
 		$str = "";
 
