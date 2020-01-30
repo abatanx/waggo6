@@ -112,7 +112,7 @@ class WGMail
 	{
 		if (!empty($this->template))
 		{
-			$newbody = HtmlTemplate::t_buffer($this->template, $this->mail_body);
+			$newbody = HtmlTemplate::buffer($this->template, $this->mail_body);
 		}
 		else
 		{
@@ -207,7 +207,7 @@ class WGMail
 
 		$data["body"] = $body;
 
-		$newbody = HtmlTemplate::t_buffer(WGCONF_DIR_TPL."/mail.txt", $data);
+		$newbody = HtmlTemplate::buffer( WGCONF_DIR_TPL . "/mail.txt", $data);
 
 		$newbody = preg_replace('/\r\n/',"\n",$newbody);
 		$newbody = preg_replace('/\n/',"\r\n",$newbody);

@@ -28,11 +28,11 @@ class WGHtmlCanvas extends WGCanvas
 {
 	function build()
 	{
-		return HtmlTemplate::t_buffer($this->template, $this->html);
+		return HtmlTemplate::buffer($this->template, $this->html);
 	}
 	function buildAndFlush()
 	{
-		HtmlTemplate::t_include($this->template, $this->html);
+		HtmlTemplate::include($this->template, $this->html);
 	}
 }
 
@@ -41,13 +41,13 @@ class WGMobileHtmlCanvas extends WGCanvas
 	const TO_ENCODING = "SJIS";
 	function build()
 	{
-		return HtmlTemplate::t_buffer($this->template, $this->html);
+		return HtmlTemplate::buffer($this->template, $this->html);
 	}
 	function buildAndFlush()
 	{
 		$ie = mb_internal_encoding();
 		ob_start();
-		HtmlTemplate::t_include($this->template, $this->html);
+		HtmlTemplate::include($this->template, $this->html);
 		$c = mb_convert_encoding(ob_get_contents(),self::TO_ENCODING,$ie);
 		ob_end_clean();
 		$l = strlen($c);
@@ -60,11 +60,11 @@ class WGXMLCanvas extends WGCanvas
 {
 	function build()
 	{
-		return HtmlTemplate::t_buffer($this->template, $this->html);
+		return HtmlTemplate::buffer($this->template, $this->html);
 	}
 	function buildAndFlush()
 	{
 		header("Content-Type: text/xml");
-		HtmlTemplate::t_include($this->template, $this->html);
+		HtmlTemplate::include($this->template, $this->html);
 	}
 }

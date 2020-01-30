@@ -29,7 +29,7 @@ class HtmlTemplateEncoder
 		return $data;
 	}
 
-	static public function CDATA( $cdata )
+	static public function cdata( $cdata )
 	{
 		$caps =
 			"<![CDATA[" .
@@ -80,397 +80,355 @@ class HtmlTemplateEncoder
 
 class HtmlTemplate
 {
-	static protected function hash_cachefile( $file )
+	static protected function die( $msg )
+	{
+		if ( function_exists( 'wgdie' ) )
+		{
+			wgdie( $msg );
+		}
+		else
+		{
+			$m = htmlspecialchars( $msg );
+			echo <<<___END___
+<html lang="en">
+<body>
+	<p>{$m}</p>
+</body>
+</html>
+___END___;
+			die();
+		}
+	}
+
+	static protected function __SANDBOX__( $__FILENAME__, $__ARY__ )
+	{
+		// Don't change argument variable names, $__FILENAME__, $__VAL__ .
+		$__IDX__ = [];
+		$__VAL__ = [];
+		echo $__FILENAME__;
+		include( $__FILENAME__ );
+	}
+
+	static protected function getCacheHash( $file )
 	{
 		return md5( sprintf( "%s/%s#%d", $_SERVER["PHP_SELF"], $file, filemtime( __FILE__ ) ) ) . ".php";
 	}
 
-	static protected function t_cache( $__file__ )
+	static protected function isCached( $file )
 	{
-		$__id__ = self::hash_cachefile( $__file__ );
-		$__d1__ = substr( $__id__, 0, 1 );
-		$__d2__ = substr( $__id__, 1, 1 );
-		$__st__ = @filemtime( $__file__ );
-		$__ct__ = @filemtime( WGCONF_CANVASCACHE . "/$__d1__/$__d2__/$__id__" );
-		if ( $__st__ === false || $__st__ > $__ct__ )
-		{
-			return false;
-		}
+		$hs = self::getCacheHash( $file );
+		$d1 = substr( $hs, 0, 1 );
+		$d2 = substr( $hs, 1, 1 );
+		$st = @filemtime( $file );
+		$ct = @filemtime( WGCONF_CANVASCACHE . "/$d1/$d2/$hs" );
 
-		return true;
+		return ! ( $st === false || $st > $ct );
 	}
 
-	static protected function t_runcache( $__file__, $__data__ )
+	static protected function runCache( $file, $val )
 	{
-		$__id__      = self::hash_cachefile( $__file__ );
-		$__d1__      = substr( $__id__, 0, 1 );
-		$__d2__      = substr( $__id__, 1, 1 );
-		$__incfile__ = WGCONF_CANVASCACHE . "/$__d1__/$__d2__/$__id__";
-		$val         = $__data__;
-		include $__incfile__;
+		$hs = self::getCacheHash( $file );
+		$d1 = substr( $hs, 0, 1 );
+		$d2 = substr( $hs, 1, 1 );
+		$fi = WGCONF_CANVASCACHE . "/$d1/$d2/$hs";
+		self::__SANDBOX__( $fi, $val );
 	}
 
-	static protected function t_writecache( $__file__, $__code__ )
+	static protected function storeCache( $file, $code )
 	{
-		$__id__      = self::hash_cachefile( $__file__ );
-		$__d1__      = substr( $__id__, 0, 1 );
-		$__d2__      = substr( $__id__, 1, 1 );
-		$__incfile__ = WGCONF_CANVASCACHE . "/$__d1__/$__d2__/$__id__";
-		$__d__       = WGCONF_CANVASCACHE . "/$__d1__";
-		if ( ! is_dir( $__d__ ) )
+		$hs = self::getCacheHash( $file );
+		$d1 = substr( $hs, 0, 1 );
+		$d2 = substr( $hs, 1, 1 );
+		$fi = WGCONF_CANVASCACHE . "/$d1/$d2/$hs";
+		$d0 = WGCONF_CANVASCACHE . "/$d1";
+		if ( ! is_dir( $d0 ) )
 		{
-			mkdir( $__d__, 0777 );
-			if ( ! is_dir( $__d__ ) )
+			@mkdir( $d0, 0777 );
+			if ( ! is_dir( $d0 ) || ! is_readable( $d0 ) || ! is_writable( $d0 ) )
 			{
-				printf( "<html><body><p>Can't create a directory of compiled template cache file.<br>%s</p></body></html>", htmlspecialchars( $__d__ ) );
-
-				return false;
+				self::die( sprintf( "Can't create a directory of compiled template cache file.\n%s", htmlspecialchars( $d0 ) ) );
 			}
 		}
 
-		$__d__ .= "/$__d2__";
-		if ( ! is_dir( $__d__ ) )
+		$d0 .= "/$d2";
+		if ( ! is_dir( $d0 ) )
 		{
-			mkdir( $__d__, 0777 );
-			if ( ! is_dir( $__d__ ) )
+			@mkdir( $d0, 0777 );
+			if ( ! is_dir( $d0 ) || ! is_readable( $d0 ) || ! is_writable( $d0 ) )
 			{
-				printf( "<html><body><p>Can't create a directory of compiled template cache file.<br>%s</p></body></html>", htmlspecialchars( $__d__ ) );
-
-				return false;
+				self::die( sprintf( "Can't create a directory of compiled template cache file.\n%s", htmlspecialchars( $d0 ) ) );
 			}
 		}
 
-		if ( @file_put_contents( $__incfile__, $__code__ ) === false )
+		if ( @file_put_contents( $fi, $code ) === false )
 		{
-			printf( "<html><body><p>Can't create compiled template cache file.<br>%s</p></body></html>", htmlspecialchars( $__incfile__ ) );
+			self::die( sprintf( "Can't create a directory of compiled template cache file.\n%s", htmlspecialchars( $fi ) ) );
 		}
 
-		return $__incfile__;
+		return $fi;
 	}
 
 	/**
-	 * Interprit a file on memory and output the result.
-	 * @access public
+	 * Include template before parse and caching
 	 *
-	 * @param string $__file__ Filename
-	 * @param array $__data__ a tree-like array
+	 * @param string $file Filename
+	 * @param array $val a tree-like array
 	 *
 	 * @return void
 	 */
-	static public function t_Include( $__file__, $__data__ )
+	static public function include( $file, $val )
 	{
-		if ( self::t_cache( $__file__ ) === true )
+		if ( self::isCached( $file ) === true )
 		{
-			self::t_runcache( $__file__, $__data__ );
+			self::runCache( $file, $val );
 		}
 		else
 		{
-			$val         = $__data__;
-			$__code__    = self::_parsesrc( @file_get_contents( $__file__ ) );
-			$__incfile__ = self::t_writecache( $__file__, $__code__ );
-			if ( $__incfile__ !== false )
+			$code = self::parse( @file_get_contents( $file ) );
+			$fi   = self::storeCache( $file, $code );
+			if ( $fi !== false )
 			{
-				include( $__incfile__ );
+				self::__SANDBOX__( $fi, $val );
 			}
 		}
 	}
 
 	/**
-	 * Interprit a file on memory and require the result as a string.
-	 * @access public
+	 * Include template as string before parse and caching
 	 *
-	 * @param String $__file__ Filename
-	 * @param array $__data__ a tree-like array
+	 * @param String $file Filename
+	 * @param array $val a tree-like array
 	 *
 	 * @return string
 	 */
-	static public function t_Buffer( $__file__, $__data__ )
+	static public function buffer( $file, $val )
 	{
 		ob_start();
-		self::t_Include( $__file__, $__data__ );
-		$__result__ = ob_get_contents();
+		self::include( $file, $val );
+		$result = ob_get_contents();
 		ob_end_clean();
 
-		return $__result__;
+		return $result;
 	}
 
-	static public function xml_Include( $__file__, $__data__, $__encoding__ = "utf-8" )
+	/**
+	 * Quote PHP tag
+	 *
+	 * @param string Format string
+	 * @param mixed Format args
+	 *
+	 * @return string
+	 */
+	static protected function __CODE__()
 	{
-		$val      = $__data__;
-		$__code__ = self::_parsesrc( @file_get_contents( $__file__ ) );
-		ob_start();
-		echo eval( '?>' . $__code__ );
-		$__result__ = ob_get_contents();
-		ob_end_clean();
+		$args = func_get_args();
+		$fmt  = array_shift( $args );
 
-		switch ( strtolower( $__encoding__ ) )
-		{
-			case "sjis":
-			case "shiftjis":
-			case "shift-jis":
-			case "shift_jis":
-				$__encx__ = "Shift_JIS";
-				$__encp__ = "SJIS";
-				break;
-			case "euc":
-			case "eucjp":
-			case "euc-jp":
-			case "euc_jp":
-				$__encx__ = "euc-jp";
-				$__encp__ = "EUC-JP";
-				break;
-			case "utf8":
-			case "utf-8":
-			default:
-				$__encx__ = "UTF-8";
-				$__encp__ = "UTF-8";
-				break;
-		}
+		return '<?php ' . vsprintf( $fmt, $args ) . ' ?>';
+	}
 
-		header( "Content-type: text/xml" );
-		$__result__ = '<?xml version="1.0" encoding="' . $__encx__ . '"?>' . "\r\n" . $__result__;
-		echo mb_convert_encoding( $__result__, $__encp__, "utf-8" );
+	/**
+	 * Quote RegEx
+	 *
+	 * @param string $re RegEx string
+	 *
+	 * @return string
+	 */
+	static protected function __RE__( $re )
+	{
+		return sprintf( '~%s~ui', $re );
+	}
+
+	/**
+	 * Parse syntax and variables
+	 *
+	 * @param string $subject Template source code
+	 * @param string $regex Regular expression
+	 * @param string $index Index number of group by regular expression
+	 * @param array $each_targets Replace last variable if provided each target list.
+	 * @param mixed|callable $prepare Prepare callback
+	 * @param callable $translation Translation code
+	 */
+	static protected function parser( &$subject, $regex, $index, $each_targets, $prepare, $translation )
+	{
+		$state   = new stdClass();
+		$subject = preg_replace_callback( $regex,
+			function ( $match ) use ( $state, $prepare, $translation, $index, $each_targets ) {
+				$state->match = $match;
+				$val_string   = $prepare ? $prepare( $state, $state->match[ $index ] ) : $state->match[ $index ];
+
+				if ( preg_match( self::__RE__( '^(#|\*)(.+)$' ), $val_string, $m2 ) )
+				{
+					switch($m2[1])
+					{
+						case '#':
+							$state->var = sprintf( '$__IDX__[\'%s\']', addslashes( $m2[2] ) );
+							break;
+						case '*':
+							$state->var = sprintf( '$__VAL__[\'%s\']', addslashes( $m2[2] ) );
+							break;
+						default:
+							$state->var = '';
+							break;
+					}
+
+				}
+				else
+				{
+					$ary_path = [];
+					$val_path = [];
+					if ( $index !== false )
+					{
+						$path_elements = explode( "/", $val_string );
+						foreach ( $path_elements as $idx => $x )
+						{
+							$val_path[] = $x;
+							if ( $idx != count( $path_elements ) - 1 && is_array( $each_targets ) && in_array( join( "/", $val_path ), $each_targets ) )
+							{
+								$ary_path[] = "['" . addslashes($x) . "'][\$__IDX__['" . addslashes( implode( "/", $val_path ) ) . "']]";
+							}
+							else
+							{
+								$ary_path[] = "['" . addslashes($x) . "']";
+							}
+						}
+					}
+					$state->var = sprintf( '$__ARY__%s', implode( '', $ary_path ) );
+				}
+
+				return $translation( $state );
+			}, $subject );
 	}
 
 	/**
 	 * Parse HTML strings.
-	 * @access private
 	 *
-	 * @param String $str HTML strings.
+	 * @param String $code HTML strings.
 	 *
 	 * @return String
 	 */
-	static protected function _parsesrc( $str )
+	static protected function parse( $code )
 	{
 		#translate \r\n to \n
-		$str = str_replace( "\r\n", "\n", $str );
-		$str = str_replace( "\n\r", "\n", $str );
+		$code = str_replace( "\r\n", "\n", $code );
+		$code = str_replace( "\n\r", "\n", $code );
 
-		# interpretation of <!--{each }--><!--{/each}-->
-		preg_match_all( "/<!--\{each ([^\}]+)\}-->/i", $str, $k, PREG_SET_ORDER );
-		$kuri = array_map( function ( $v ) {
+		/**
+		 * <!--{each n}-->
+		 * <!--{/each}-->
+		 */
+		$each_targets = [];
+		$each_regex   = self::__RE__( '<!--{each (.+?)}-->' );
+
+		preg_match_all( $each_regex, $code, $eachs, PREG_SET_ORDER );
+		$each_targets = array_merge( $each_targets, array_map( function ( $v ) {
 			return $v[1];
-		}, $k );
+		}, $eachs ) );
+		self::parser( $code, $each_regex, 1, $each_targets, false, function ( $state ) {
+			return self::__CODE__(
+				'if(isset(%1$s) && is_array(%1$s)) foreach(%1$s as $__IDX__[\'%2$s\'] => $__VAL__[\'%2$s\'] ){',
+				$state->var, addslashes($state->match[1])
+			);
+		} );
+		self::parser( $code, self::__RE__( '<!--{/each}-->' ), false, [], false, function () {
+			return self::__CODE__( '}' );
+		} );
 
-		foreach ( $kuri as $m )
-		{
-			$ar  = explode( "/", $m );
-			$ind = "";
-			$rui = [];
-			foreach ( $ar as $idx => $x )
-			{
-				$rui[] = $x;
-				if ( $idx != count( $ar ) - 1 && in_array( implode( "/", $rui ), $kuri ) )
+		/**
+		 * <!--{def n}-->
+		 * <!--{ndef n}-->
+		 * <!--{else}-->
+		 * <!--{/def}-->
+		 */
+		self::parser( $code, self::__RE__( '<!--{(n?)def (.+?)}-->' ), 2, $each_targets, false,
+			function ( $state ) {
+				return self::__CODE__(
+					'if(((isset(%1$s) && !is_array(%1$s) && !empty(%1$s)) or (isset(%1$s) && is_array(%1$s) && count(%1$s)>0)) xor %2$s){',
+					$state->var, ( $state->match[1] !== '' ) ? 'true' : 'false'
+				);
+			} );
+		self::parser( $code, self::__RE__( '<!--{else}-->' ), false, [], false, function () {
+			return self::__CODE__( '} else {' );
+		} );
+		self::parser( $code, self::__RE__( '<!--{/def}-->' ), false, [], false, function () {
+			return self::__CODE__( '}' );
+		} );
+
+		/**
+		 * <!--{switch n}-->
+		 * <!--{case x}--><!--{/case}-->
+		 * <!--{default}--><!--{/default}-->
+		 * <!--{/switch}-->
+		 */
+		self::parser( $code, self::__RE__( '<!--{switch (.+?)}-->' ), 1, $each_targets, false, function ( $state ) {
+			return self::__CODE__( 'switch(%s){', $state->var );
+		} );
+		self::parser( $code, self::__RE__( '<!--{case (.+?)}-->' ), false, [], false, function ( $state ) {
+			return self::__CODE__( 'case \'%s\':', addslashes( $state->match[1] ) );
+		} );
+		self::parser( $code, self::__RE__( '<!--{/case}-->' ), false, [], false, function () {
+			return self::__CODE__( 'break;' );
+		} );
+		self::parser( $code, self::__RE__( '<!--{default}-->' ), false, [], false, function () {
+			return self::__CODE__( 'default:' );
+		} );
+		self::parser( $code, self::__RE__( '<!--{/default}-->' ), false, [], false, function () {
+			return self::__CODE__( 'break;' );
+		} );
+		self::parser( $code, self::__RE__( '<!--{/switch}-->' ), false, [], false, function () {
+			return self::__CODE__( '}' );
+		} );
+
+		/**
+		 * {val n}
+		 */
+		self::parser( $code, self::__RE__( '{([0-9a-z_]+) (.+?)}' ), 2, $each_targets, false, function ( $state ) {
+			return self::__CODE__( 'if(isset(%1$s)) echo HTE::%2$s(%1$s);', $state->var, strtolower( $state->match[1] ) );
+		} );
+
+		/**
+		 * {@n}
+		 */
+		self::parser( $code, self::__RE__( '{@(.+?)}' ), 1, $each_targets, false, function ( $state ) {
+			return self::__CODE__( 'if(isset(%1$s)) echo %1$s;', $state->var );
+		} );
+
+		/**
+		 * {%n}
+		 */
+		self::parser( $code, self::__RE__( '{%(.+?)}' ), 1, $each_targets,
+			function ( $state, $val_string ) {
+				$state->e = '';
+				$s        = explode( '/', $val_string );
+				if ( count( $s ) > 0 )
 				{
-					$ind .= "[\"$x\"][\$cnt[\"" . implode( "_", $rui ) . "\"]]";
+					list( $k, $e ) = explode( ':', array_pop( $s ) );
+					$state->e = ':' . $e;
+
+					return implode( '/', array_merge( $s, [ $k ] ) );
 				}
 				else
 				{
-					$ind .= "[\"$x\"]";
+					return $val_string;
 				}
-			}
-			$n    = str_replace( "/", "_", $m );
-			$str = str_replace( "<!--{each $m}-->",
-				"<?php " .
-				"if(isset(\$val$ind) && is_array(\$val$ind)) for(\$cnt[\"$n\"]=0;\$cnt[\"$n\"]<count(\$val$ind);\$cnt[\"$n\"]++){" .
-				" ?>", $str );
-		}
+			},
+			function ( $state ) {
+				return self::__CODE__( 'echo $__ARY__[%s%s];', $state->var, $state->e );
+			} );
 
-		$str = str_replace( "<!--{/each}-->", "<?php } ?>", $str );
+		/**
+		 * {n?text}
+		 */
+		self::parser( $code, self::__RE__( '{([\w\/:\-]+)\?(.+?)}' ), 1, $each_targets, false,
+			function ( $state ) {
+				return self::__CODE__(
+					'if((isset(%1$s) && !is_array(%1$s) && %1$s!="") || (isset(%1$s) && is_array(%1$s) && count(%1$s)>0)) ' .
+					'echo \'' . addslashes( $state->match[2] ) . '\';', $state->var );
+			} );
 
-		# interpretation of {?val }
-		while ( preg_match( '/\{([a-z]*)val (.+?)\}/', $str, $match ) )
-		{
-			$r   = $match[1];
-			$m   = $match[2];
-			$ar  = explode( "/", $m );
-			$ind = "";
-			$rui = [];
-			foreach ( $ar as $x )
-			{
-				$rui[] = $x;
-				if ( in_array( implode( "/", $rui ), $kuri ) )
-				{
-					$ind .= "[\"" . $x . "\"][\$cnt[\"" . implode( "_", $rui ) . "\"]]";
-				}
-				else
-				{
-					$ind .= "[\"" . $x . "\"]";
-				}
-			}
-
-			$c   = strtolower( $r );
-			$fmt = "HTE::{$c}val(\$val$ind)";
-
-			$str = str_replace( "{" . $r . "val $m}", "<?php if( isset(\$val$ind) ) echo $fmt; ?>", $str );
-		}
-
-		# interpretation of {CDATA }
-		while ( preg_match( '/\{CDATA (.+?)\}/', $str, $match ) )
-		{
-			$m   = $match[1];
-			$ar  = explode( "/", $m );
-			$ind = "";
-			$rui = [];
-			foreach ( $ar as $x )
-			{
-				$rui[] = $x;
-				if ( in_array( implode( "/", $rui ), $kuri ) )
-				{
-					$ind .= "[\"" . $x . "\"][\$cnt[\"" . implode( "_", $rui ) . "\"]]";
-				}
-				else
-				{
-					$ind .= "[\"" . $x . "\"]";
-				}
-			}
-
-			$fmt  = "HTE::CDATA(\$val$ind)";
-			$str = str_replace( "{CDATA $m}", "<?php echo $fmt; ?>", $str );
-		}
-
-		# interpretation of {@|% }
-		while ( preg_match( '/\{(\@)(.+?)\}/', $str, $match ) )
-		{
-			$rep = $match[1] . $match[2];
-			list( $m ) = explode( ",", $match[2] );
-			$ar  = explode( "/", $m );
-			$ind = "";
-			$rui = [];
-			$a   = null;
-			foreach ( $ar as $x )
-			{
-				$rui[] = $x;
-				if ( in_array( implode( "/", $rui ), $kuri ) )
-				{
-					$ind .= "[\"" . $x . "\"][\$cnt[\"" . implode( "_", $rui ) . "\"]]";
-				}
-				else
-				{
-					$ind .= "[\"" . $x . "\"]";
-				}
-			}
-			$str = str_replace( "{" . $rep . "}", "<?php echo \$val$ind; ?>", $str );
-		}
-
-		# interpretation of {@|% }
-		while ( preg_match( '/\{(%)(.+?)\}/', $str, $match ) )
-		{
-			$rep = $match[1] . $match[2];
-			list( $m ) = explode( ",", $match[2] );
-			$ar  = explode( "/", $m );
-			$ind = "";
-			$rui = [];
-			$a   = null;
-			foreach ( $ar as $x )
-			{
-				list( $x, $a ) = explode( ':', $x );
-				$rui[] = $x;
-				if ( in_array( implode( "/", $rui ), $kuri ) )
-				{
-					$ind .= "[\"" . $x . "\"][\$cnt[\"" . implode( "_", $rui ) . "\"]]";
-				}
-				else
-				{
-					$ind .= "[\"" . $x . "\"]";
-				}
-			}
-			$a    = ! empty( $a ) ? "\":{$a}\"" : "\"\"";
-			$str = str_replace( "{" . $rep . "}", "<?php echo \$val[\$val$ind.$a]; ?>", $str );
-		}
-
-		# interpretation of <!--{(n?)def }--><!--{else}--><!--{/def}-->
-		while ( preg_match( '/<!--\{(n?)def ([^\}]+)\}-->/i', $str, $match ) )
-		{
-			$n   = $match[1];
-			$m   = $match[2];
-			$ar  = explode( "/", $m );
-			$ind = "";
-			$rui = [];
-			foreach ( $ar as $idx => $x )
-			{
-				$rui[] = $x;
-				if ( $idx != count( $ar ) - 1 && in_array( implode( "/", $rui ), $kuri ) )
-				{
-					$ind .= "[\"" . $x . "\"][\$cnt[\"" . implode( "_", $rui ) . "\"]]";
-				}
-				else
-				{
-					$ind .= "[\"" . $x . "\"]";
-				}
-			}
-			$xor  = ( $n != "" ) ? "true" : "false";
-			$str = str_replace( "<!--{{$n}def $m}-->",
-				"<?php " .
-				"if(" .
-				"((isset(\$val$ind) && !is_array(\$val$ind) && \$val$ind!=\"\") or" .
-				" (isset(\$val$ind) && is_array(\$val$ind) && count(\$val$ind)>0)) xor $xor){ ?>",
-				$str );
-		}
-		$str = str_replace( "<!--{/def}-->", "<?php } ?>", $str );
-		$str = str_replace( "<!--{else}-->", "<?php } else { ?>", $str );
-
-		# interpretation of {var?text}
-		while ( preg_match( '/\{([\w\/:\-]+)\?([^\}]+)\}/i', $str, $match ) )
-		{
-			$m   = $match[1];
-			$v   = $match[2];
-			$ar  = explode( "/", $m );
-			$ind = "";
-			$rui = [];
-			foreach ( $ar as $idx => $x )
-			{
-				$rui[] = $x;
-				if ( $idx != count( $ar ) - 1 && in_array( implode( "/", $rui ), $kuri ) )
-				{
-					$ind .= "[\"" . $x . "\"][\$cnt[\"" . implode( "_", $rui ) . "\"]]";
-				}
-				else
-				{
-					$ind .= "[\"" . $x . "\"]";
-				}
-			}
-			$str = str_replace( $match[0],
-				"<?php if((isset(\$val$ind) && !is_array(\$val$ind) && \$val$ind!=\"\") or (isset(\$val$ind) && is_array(\$val$ind) && count(\$val$ind)>0)) echo '" . addslashes( $v ) . "'; ?>",
-				$str );
-		}
-
-		# interpretation of <!--{switch }--><!--{case }--><!--{/case}--><!--{/switch}-->
-		while ( preg_match( '/<!--\{switch ([^\}]+)\}-->/i', $str, $match ) )
-		{
-			$m   = $match[1];
-			$ar  = explode( "/", $m );
-			$ind = "";
-			$rui = [];
-			foreach ( $ar as $idx => $x )
-			{
-				$rui[] = $x;
-				if ( $idx != count( $ar ) - 1 && in_array( implode( "/", $rui ), $kuri ) )
-				{
-					$ind .= "[\"" . $x . "\"][\$cnt[\"" . implode( "_", $rui ) . "\"]]";
-				}
-				else
-				{
-					$ind .= "[\"" . $x . "\"]";
-				}
-			}
-			$str = str_replace( "<!--{switch $m}-->",
-				"<?php " .
-				"switch(\$val$ind) { ?>", $str );
-		}
-
-		# case
-		while ( preg_match( '/<!--\{case ([^\}]+)\}-->/i', $str, $match ) )
-		{
-			$m    = $match[1];
-			$str = str_replace( "<!--{case $m}-->", "<?php case \"" . addslashes( $m ) . "\": ?>", $str );
-		}
-		$str = str_replace( "<!--{/case}-->", "<?php break; ?>", $str );
-		$str = str_replace( "<!--{default}-->", "<?php default: ?>", $str );
-		$str = str_replace( "<!--{/default}-->", "<?php break; ?>", $str );
-		$str = str_replace( "<!--{/switch}-->", "<?php } ?>", $str );
-
-		# end
-		return $str;
+		/**
+		 * end
+		 */
+		return $code;
 	}
 }
