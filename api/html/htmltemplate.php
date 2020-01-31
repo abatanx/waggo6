@@ -427,6 +427,18 @@ ___END___;
 			} );
 
 		/**
+		 * {$n}
+		 */
+		$immediate_references = [];
+		self::parser( $code, self::__RE__( '{\$(.+?)}' ), 1, $each_targets, false, function ( $state ) use (&$immediate_references) {
+			$immediate_var = sprintf('$__IRF%d__', count($immediate_references));
+			$immediate_references[] = sprintf('%s=&%s;', $immediate_var, $state->var);
+			return $immediate_var;
+		} );
+		if( count($immediate_references) > 0 ) $code = self::__CODE__(implode("\n", $immediate_references)) . $code;
+		unset($immediate_references);
+
+		/**
 		 * end
 		 */
 		return $code;
