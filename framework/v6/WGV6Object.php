@@ -14,7 +14,7 @@ class WGV6Object
 	 */
 	public $params;
 
-	protected $uid,$key,$value,$enable,$display,$lock,$focus;
+	protected $id,$key,$enable,$lock,$focus,$extra;
 
 	/**
 	 * @var WGG
@@ -27,34 +27,38 @@ class WGV6Object
 	public $controller;
 
 	/**
-	 * コントローラーから引き継がれたセッションを利用するよ。
 	 * @var WGFSession
 	 */
 	public $session;
 
 	/**
-	 * コンストラクタ
+	 * WGV6Object constructor.
 	 */
 	public function __construct()
 	{
-		$_SESSION["_sOBJSEQ"]++;
 		$this->params   = new WGV6Params();
 		$this->enable   = true;
 		$this->lock     = false;
 		$this->gauntlet = null;
-		$this->uid      = $this->newId();
+		$this->id       = $this->newId();
 		$this->focus    = false;
-		$this->extra    = null;
+		$this->extra    = new stdClass();
+		$this->key      = null;
 	}
 
+	/**
+	 * Generate new identifier.
+	 * @return string
+	 */
 	public function newId()
 	{
 		$seq = ++$_SESSION["_sOBJSEQ"];
 		return sprintf("wgv-%d", $seq);
 	}
 
-	public function getId()					{ return $this->uid;										}
-	public function getUid()				{ return $this->getId();									}
+	public function getId()					{ return $this->id;											}
+	public function setId($id)				{ $this->id = $id;							return $this;	}
+
 	public function getIds()				{ return $this->getId();									}
 	public function initSession($session)	{ $this->session=$session; 					return $this;	}
 	public function initController($controller) { $this->controller=$controller;		return $this;	}
@@ -147,9 +151,13 @@ class WGV6Object
 	 */
 	public function controller($c)		{ return $this;													}
 
-	public function setExtra($e)		{ $this->extra = $e;		return $this;						}
 	public function getExtra()			{ return $this->extra;											}
 
+	/**
+	 * Return publish values for htmltemplate.
+	 * {@key:{id,name,value...}}
+	 * @return string[]
+	 */
 	public function publish()			{
 		return
 			array(
