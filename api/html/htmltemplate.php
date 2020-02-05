@@ -105,7 +105,6 @@ ___END___;
 		// Don't change argument variable names, $__FILENAME__, $__VAL__ .
 		$__IDX__ = [];
 		$__VAL__ = [];
-		echo $__FILENAME__;
 		include( $__FILENAME__ );
 	}
 
