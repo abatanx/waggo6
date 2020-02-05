@@ -403,7 +403,7 @@ ___END___;
 				if ( count( $s ) > 0 )
 				{
 					list( $k, $e ) = explode( ':', array_pop( $s ) );
-					$state->e = ':' . $e;
+					$state->e = '.\':' . addslashes($e) . '\'';
 
 					return implode( '/', array_merge( $s, [ $k ] ) );
 				}
@@ -435,7 +435,7 @@ ___END___;
 			$immediate_references[] = sprintf('%s=&%s;', $immediate_var, $state->var);
 			return $immediate_var;
 		} );
-		if( count($immediate_references) > 0 ) $code = self::__CODE__(implode("\n", $immediate_references)) . $code;
+		if( count($immediate_references) > 0 ) $code = self::__CODE__(implode("", $immediate_references)) . $code;
 		unset($immediate_references);
 
 		/**
