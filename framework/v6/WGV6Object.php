@@ -52,8 +52,9 @@ class WGV6Object
 	 */
 	public function newId()
 	{
+		if( !isset($_SESSION['_sOBJSEQ']) || !is_int($_SESSION['_sOBJSEQ'] )) $_SESSION['_sOBJSEQ'] = 1000;
 		$seq = ++$_SESSION["_sOBJSEQ"];
-		return sprintf("wgv-%d", $seq);
+		return sprintf("wg-view-%d", wg_m10w31($seq));
 	}
 
 	public function getId()					{ return $this->id;											}
