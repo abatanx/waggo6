@@ -11,7 +11,7 @@ function detect_pear()
 	$pear_exec = dirname( $_SERVER['_'] ) . '/pear';
 	if( file_exists($pear_exec) && is_executable($pear_exec) )
 	{
-		$p = trim(exec("/usr/bin/pear config-get php_dir"));
+		$p = trim(exec("{$pear_exec} config-get php_dir"));
 		if( !empty($p) )
 		{
 			$t_pear_dir = rtrim($p, '/\\');
