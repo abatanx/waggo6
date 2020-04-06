@@ -1,7 +1,7 @@
 <?php
 /**
  * waggo6
- * @copyright 2013-2019 CIEL, K.K.
+ * @copyright 2013-2020 CIEL, K.K., project waggo.
  * @license MIT
  */
 
@@ -27,7 +27,7 @@ class WGGString extends WGG
 	{
 		return sprintf("%d〜%d文字の長さの範囲で入力してください。", $this->min, $this->max);
 	}
-	
+
 	public function validate(&$data)
 	{
 		$l = mb_strlen($data);

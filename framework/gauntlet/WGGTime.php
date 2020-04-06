@@ -1,7 +1,7 @@
 <?php
 /**
  * waggo6
- * @copyright 2013-2019 CIEL, K.K.
+ * @copyright 2013-2020 CIEL, K.K., project waggo.
  * @license MIT
  */
 
@@ -18,7 +18,7 @@ class WGGTime extends WGG
 	{
 		return sprintf("有効な時間を入力してください。");
 	}
-	
+
 	public function validate(&$data)
 	{
 		if( wg_datetime_checktime($data) )

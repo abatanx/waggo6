@@ -1,7 +1,7 @@
 <?php
 /**
  * waggo6
- * @copyright 2013-2019 CIEL, K.K.
+ * @copyright 2013-2020 CIEL, K.K., project waggo.
  * @license MIT
  */
 
@@ -259,7 +259,7 @@ function wg_datetime_checkdate($ymd)
 	$yy = (int)$yy;
 	$mm = (int)$mm;
 	$dd = (int)$dd;
-	
+
 	if( !checkdate($mm,$dd,$yy) ) return false;
 	return sprintf("%d/%d/%d", $yy,$mm,$dd);
 }

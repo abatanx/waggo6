@@ -1,7 +1,7 @@
 <?php
 /**
  * waggo6
- * @copyright 2013-2019 CIEL, K.K.
+ * @copyright 2013-2020 CIEL, K.K., project waggo.
  * @license MIT
  */
 
@@ -26,7 +26,7 @@ class WGGReg extends WGG
 	{
 		return '入力内容を見直してください';
 	}
-	
+
 	public function validate(&$data)
 	{
 		if( preg_match($this->regex, $data) )

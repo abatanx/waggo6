@@ -1,7 +1,7 @@
 <?php
 /**
  * waggo6
- * @copyright 2013-2019 CIEL, K.K.
+ * @copyright 2013-2020 CIEL, K.K., project waggo.
  * @license MIT
  */
 
@@ -103,9 +103,9 @@ class WGDBMSPostgreSQL extends WGDBMS
 		$rt = $b["r"] ? "OK" : "**** ERROR *****";
 		$et = $b["r"] ? "" : " <<<< {$e} >>>>";
 		$lt = $b["r"] ? WGLOG_INFO : WGLOG_ERROR ;
-		
+
 		if( $this->logging || !$this->query )
-		{	
+		{
 			wg_log_write($lt,
 				sprintf("(%s %d row(s) +%.1f/%.1f) %s%s",
 					$rt, $b["maxrows"], $td, $b["i"], $q, $et)

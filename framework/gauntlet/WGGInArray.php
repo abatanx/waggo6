@@ -1,7 +1,7 @@
 <?php
 /**
  * waggo6
- * @copyright 2013-2019 CIEL, K.K.
+ * @copyright 2013-2020 CIEL, K.K., project waggo.
  * @license MIT
  */
 
@@ -26,7 +26,7 @@ class WGGInArray extends WGG
 	{
 		return sprintf("入力を確認してください。");
 	}
-	
+
 	public function validate(&$data)
 	{
 		if( in_array($data, $this->valid_array) )

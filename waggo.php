@@ -1,13 +1,13 @@
 <?php
 /**
  * waggo6
- * @copyright 2013-2019 CIEL, K.K.
+ * @copyright 2013-2020 CIEL, K.K., project waggo.
  * @license MIT
  */
 
 define('WG_NAME'		,	"waggo" );
 define('WG_VERSION'		,	"6.00" );
-define('WG_COPYRIGHT'	,	"Copyright (c) 2013-2019 project waggo." );
+define('WG_COPYRIGHT'	,	"Copyright (C) 2013-2020 CIEL, K.K., project waggo." );
 
 function wgdie($msg)
 {

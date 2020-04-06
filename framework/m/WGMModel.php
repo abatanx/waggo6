@@ -1,7 +1,7 @@
 <?php
 /**
  * waggo6
- * @copyright 2013-2019 CIEL, K.K.
+ * @copyright 2013-2020 CIEL, K.K., project waggo.
  * @license MIT
  */
 
@@ -281,7 +281,7 @@ class WGMModel
 		if( $type===false ) $this->logFatal("Unrecognized field type, {$format_type}");
 		$this->fields[$name] = array($type,$format_type,false,$this->expansion($func));
 	}
-	
+
 	public function getTable()
 	{	return $this->tablename;			}
 
@@ -310,7 +310,7 @@ class WGMModel
 		$exp = preg_replace_callback('/\{(\w+?)\}/', $cb, $exp);
 		return $exp;
 	}
-	
+
 	public function setAutoTimestamp($initymds=array("initymd"),$updymds=array("updymd"))
 	{
 		if(!is_array($initymds)||!is_array($updymds)) $this->logFatal("setAutoTimestamp is not an array");
@@ -741,7 +741,7 @@ class WGMModel
 		// フィールド結合
 		$flds = [];
 		foreach($this->getJoinExternalFields() as $f) $flds[] = "{$f[1]} AS \"{$f[0]}\"";
-		
+
 		// テーブル結合
 		$tables  = $this->getJoinTables($this->getTable()." as ".$this->getAlias());
 		$orders  = $this->getJoinOrders([]);

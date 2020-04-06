@@ -1,6 +1,6 @@
 /**
  * waggo6
- * @copyright 2013-2019 project waggo.
+ * @copyright 2013-2020 CIEL, K.K., project waggo.
  * @author CIEL, K.K.
  * @license MIT
  **/

@@ -1,7 +1,7 @@
 <?php
 /**
  * waggo6
- * @copyright 2013-2019 CIEL, K.K.
+ * @copyright 2013-2020 CIEL, K.K., project waggo.
  * @license MIT
  */
 
@@ -43,12 +43,12 @@ function wg_get_resource_url($uniqid)
 {
 	if( strlen($uniqid)<=2 ) return false;
 	clearstatcache();
-	
+
 	$entpath  = "/{$uniqid[0]}/{$uniqid[1]}/{$uniqid}";
 	$realpath = WGCONF_DIR_RES.$entpath;
 
 	if( !is_dir($realpath) || !is_readable($realpath) ) return false;
-	
+
 	return $entpath;
 }
 

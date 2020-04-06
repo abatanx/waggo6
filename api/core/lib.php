@@ -1,7 +1,7 @@
 <?php
 /**
  * waggo6
- * @copyright 2013-2019 CIEL, K.K.
+ * @copyright 2013-2020 CIEL, K.K., project waggo.
  * @license MIT
  */
 
@@ -106,7 +106,7 @@ function wg_log_write($logtype,$msg)
 			foreach( debug_backtrace() as $b )
 			{
 				$cn  = sprintf("%s::%s", $b["class"], $b["function"]);
-				
+
 				$log = sprintf("   --> %-40s %s (%s)\n", $cn, $b["file"], $b["line"]);
 				wg_log_write_error_log($log);
 			}
