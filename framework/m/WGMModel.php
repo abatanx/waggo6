@@ -202,16 +202,14 @@ class WGMModel
 		{
 			list($oid,$nspname,$relname) = $this->getOID($tablename);
 			$this->dbms->Q(
-				"SELECT a.attname,pg_catalog.format_type(a.atttypid,a.atttypmod),".
-				"(SELECT d.adsrc FROM pg_catalog.pg_attrdef d ".
-				"WHERE d.adrelid=a.attrelid and d.adnum=a.attnum and a.atthasdef),a.attnotnull,a.attnum ".
+				"SELECT a.attname,pg_catalog.format_type(a.atttypid,a.atttypmod),a.attnotnull ".
 				"FROM pg_catalog.pg_attribute a ".
 				"WHERE a.attrelid=%s AND a.attnum>0 AND NOT a.attisdropped;",
 				$this->dbms->S($oid));
 
 			foreach($this->dbms->FALL() as $f)
 			{
-				list($name,$format_type,$deflt,$notnull,$num) = $f;
+				list($name,$format_type,$notnull) = $f;
 				$type = $this->getFieldTypeFromFormat($format_type);
 				if( $type===false ) $this->logFatal("Unrecognized field type, {$format_type} on PostgreSQL/WGMModel");
 
