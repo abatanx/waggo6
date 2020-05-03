@@ -142,7 +142,6 @@ class WGResource
 		if($this->origtype==self::RS_FILE_BINARY) return $this->getFileImageLocation();
 		$filename = "{$this->hid}{$this->px}.{$this->ext}";
 
-		wg_errorlog($this->getKeyDIR()."/{$filename}");
 		if(file_exists($this->getKeyDIR()."/{$filename}")) return $this->getKeyURL()."/{$filename}";
 		else return $this->getNotAccessibleImageLocation();
 	}

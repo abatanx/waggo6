@@ -9,8 +9,15 @@ require_once(dirname(__FILE__)."/htmltemplate.php");
 
 abstract class WGCanvas
 {
-	public $html, $template;
-	public $nocache;
+	/**
+	 * @var array $html
+	 */
+	public $html;
+
+	/**
+	 * @var string $template
+	 */
+	public $template;
 
 	public function __construct()
 	{
@@ -51,7 +58,7 @@ class WGMobileHtmlCanvas extends WGCanvas
 		$c = mb_convert_encoding(ob_get_contents(),self::TO_ENCODING,$ie);
 		ob_end_clean();
 		$l = strlen($c);
-		wg_errorlog(sprintf("MOBILE TRANSFER SIZE = %dBytes (%.1fKBytes)",$l,$l/1024));
+		wg_log_write(WGLOG_INFO, sprintf("MOBILE TRANSFER SIZE = %dBytes (%.1fKBytes)",$l,$l/1024));
 		echo $c;
 	}
 }

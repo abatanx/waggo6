@@ -25,7 +25,7 @@ class WGFMobileController extends WGFController
 		wg_mobile_input_encoding_filter();
 		wg_mobile_session();
 
-		wg_errorlog("[[[ MOBILE SESSION STARTED ]]]");
+		wg_log_write(WGLOG_INFO, "[[[ MOBILE SESSION STARTED ]]]");
 	}
 
 	protected function initCanvas()

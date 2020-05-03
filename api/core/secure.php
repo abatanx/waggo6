@@ -97,7 +97,7 @@ class WGTransition
 		{
 			$this->session = new WGFSession($sessionid,$tid);
 			if($this->session->get("%tid")!=$tid) $is_new = true;
-			if($is_new) wg_errorlog("RESET ");
+			if($is_new) wg_log_write(WGLOG_INFO, "RESET ");
 		}
 
 		if( $is_new )

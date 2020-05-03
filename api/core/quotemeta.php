@@ -5,6 +5,7 @@
  * @license MIT
  */
 
+/** @noinspection PhpDeprecationInspection */
 if ( version_compare( phpversion(), '5.4.0', '<' ) && function_exists( 'get_magic_quotes_gpc' ) && get_magic_quotes_gpc() )
 {
 	function stripslashes_deep( $value )

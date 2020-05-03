@@ -24,7 +24,7 @@ class WGFSession
 	 */
 	public function __destruct()
 	{
-		if(WG_SESSIONDEBUG) wg_errordump($_SESSION);
+		if(WG_SESSIONDEBUG) wg_log_dump(WGLOG_INFO, $_SESSION);
 	}
 
 	/**
@@ -35,7 +35,7 @@ class WGFSession
 	{
 		if(!self::$isOpenSession)
 		{
-			if(WG_SESSIONDEBUG) wg_log("[[[ waggo SESSION open ]]]");
+			if(WG_SESSIONDEBUG) wg_log_write(WGLOG_INFO,"[[[ waggo SESSION open ]]]");
 			session_cache_limiter('nocache');
 
 			if(!wg_is_mobile()) session_start();
@@ -53,7 +53,7 @@ class WGFSession
 		if(self::$isOpenSession)
 		{
 			session_write_close();
-			if(WG_SESSIONDEBUG) wg_log("[[[ waggo SESSION close ]]]");
+			if(WG_SESSIONDEBUG) wg_log_write(WGLOG_INFO,"[[[ waggo SESSION close ]]]");
 			self::$isOpenSession = False;
 		}
 	}
@@ -71,7 +71,7 @@ class WGFSession
 
 		$_SESSION[$this->sessionid][$this->transactionid]["%atime"] = time();
 
-		if(WG_SESSIONDEBUG) wg_log("[[[ waggo SESSION started, {$this->sessionid} {$this->transactionid} ]]]");
+		if(WG_SESSIONDEBUG) wg_log_write(WGLOG_INFO,"[[[ waggo SESSION started, {$this->sessionid} {$this->transactionid} ]]]");
 	}
 
 	/**
@@ -113,7 +113,7 @@ class WGFSession
 	 */
 	public function set($key,$val)
 	{
-		if(WG_SESSIONDEBUG) wg_log("SESSION set '$key' = '$val'");
+		if(WG_SESSIONDEBUG) wg_log_write(WGLOG_INFO,"SESSION set '$key' = '$val'");
 		if(is_null($val))
 		{
 			$_SESSION[$this->sessionid][$this->transactionid][$key] = null;
@@ -132,7 +132,7 @@ class WGFSession
 	{
 		$val = null;
 		if (isset($_SESSION[$this->sessionid][$this->transactionid][$key])) $val = $_SESSION[$this->sessionid][$this->transactionid][$key];
-		if(WG_SESSIONDEBUG) wg_log("SESSION get '$key' = '$val'");
+		if(WG_SESSIONDEBUG) wg_log_write(WGLOG_INFO,"SESSION get '$key' = '$val'");
 		return $val;
 	}
 
@@ -175,7 +175,7 @@ class WGFSession
 	 */
 	static public function gc()
 	{
-		if(WG_SESSIONDEBUG) wg_log("[[[ waggo SESSION garbage collection ]]]");
+		if(WG_SESSIONDEBUG) wg_log_write(WGLOG_INFO,"[[[ waggo SESSION garbage collection ]]]");
 		self::open();
 
 		$ntime = time();
@@ -190,14 +190,14 @@ class WGFSession
 					{
 						$_SESSION[$sk][$tk] = null;
 						unset($_SESSION[$sk][$tk]);
-						if(WG_SESSIONDEBUG) wg_log("[[[ COLLECTED-TRANSACTION ]]] {$sk}{$tk}");
+						if(WG_SESSIONDEBUG) wg_log_write(WGLOG_INFO,"[[[ COLLECTED-TRANSACTION ]]] {$sk}{$tk}");
 					}
 				}
 				if(count($_SESSION[$sk])==0)
 				{
 					$_SESSION[$sk] = null;
 					unset($_SESSION[$sk]);
-					if(WG_SESSIONDEBUG) wg_log("[[[ COLLECTED-SESSION-KEY ]]] {$sk}");
+					if(WG_SESSIONDEBUG) wg_log_write(WGLOG_INFO,"[[[ COLLECTED-SESSION-KEY ]]] {$sk}");
 				}
 			}
 		}
