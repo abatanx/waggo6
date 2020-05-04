@@ -5,11 +5,11 @@
  * @license MIT
  */
 
-define( 'WGLOG_APP',     0 );    ///< 情報タイプのログメッセージである。
-define( 'WGLOG_INFO',    1 );    ///< 情報タイプのログメッセージである。
+define( 'WGLOG_APP', 0 );    ///< 情報タイプのログメッセージである。
+define( 'WGLOG_INFO', 1 );    ///< 情報タイプのログメッセージである。
 define( 'WGLOG_WARNING', 2 );    ///< 警告タイプのログメッセージである。
-define( 'WGLOG_ERROR',   3 );    ///< エラータイプのログメッセージである。
-define( 'WGLOG_FATAL',   9 );    ///< 致命的エラータイプのログメッセージである。
+define( 'WGLOG_ERROR', 3 );    ///< エラータイプのログメッセージである。
+define( 'WGLOG_FATAL', 9 );    ///< 致命的エラータイプのログメッセージである。
 
 $wg_log_write_colors = array(
 	mt_rand( 1, 7 ),
@@ -42,6 +42,7 @@ function wg_deplicated( $is_forward, $func, $solver, $params = null )
 	{
 		return call_user_func_array( $solver, $params );
 	}
+
 	return null;
 }
 
@@ -69,14 +70,15 @@ function wg_log_write_error_log( $log )
  * ログに情報を出力する。
  *
  * @param integer $logtype 出力するメッセージのタイプ(WGLOG_APP|WGLOG_INFO|WGLOG_WARNING|WGLOG_ERROR|WGLOG_FATAL)
- * @param string $msg メッセージ。
+ * @param mixed $fmt,... メッセージ。可変パラメータがない場合は $fmt はそのまま表示される。
  */
-function wg_log_write( $logtype, $msg )
+function wg_log_write( $logtype, $fmt )
 {
-	if ( WG_LOGFILE == "" )
+	if ( WG_LOGFILE == '' )
 	{
 		return;
 	}
+	$msg = func_num_args() <= 2 ? $fmt : vsprintf( $fmt, array_slice( func_get_args(), 2 ) );
 
 	if ( $logtype == WGLOG_APP ||
 		 ( $logtype == WGLOG_INFO && WG_DEBUG == true ) ||
