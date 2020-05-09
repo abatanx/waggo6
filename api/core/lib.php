@@ -61,6 +61,7 @@ function wg_log_write_error_log( $log )
 			break;
 
 		case 1:
+			@chmod(WG_LOGFILE, 0666);
 			error_log( $log, 3, WG_LOGFILE );
 			break;
 	}
