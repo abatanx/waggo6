@@ -102,6 +102,7 @@ function wg_remake_url($url,$params=array())
  */
 function wg_is_mobile()
 {
+	if( !@isset($_SERVER['HTTP_USER_AGENT']) ) return false;
 	$a = $_SERVER['HTTP_USER_AGENT'];
 	return preg_match('/^(DoCoMo|J-PHONE|Vodafone|SoftBank|UP\.Browser|KDDI)/',$a)>0 ? true : false ;
 }
