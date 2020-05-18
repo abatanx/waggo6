@@ -33,11 +33,11 @@ $remote_adr = wg_get_remote_adr();
 wg_log_write(WGLOG_INFO,"++ ".WG_NAME." ".WG_VERSION);
 wg_log_write(WGLOG_INFO,"** PHP version     = [".phpversion()."]");
 wg_log_write(WGLOG_INFO,"** Server          = [".php_uname("a")."]");
-wg_log_write(WGLOG_INFO,"** REQUEST_URI     = [{$_SERVER['REQUEST_URI']}]");
-wg_log_write(WGLOG_INFO,"** REQUEST_METHOD  = [{$_SERVER['REQUEST_METHOD']}] {$_SERVER['SERVER_PROTOCOL']}");
-wg_log_write(WGLOG_INFO,"** HTTP_USER_AGENT = [{$_SERVER['HTTP_USER_AGENT']}]");
-wg_log_write(WGLOG_INFO,"** REMOTE          = [{$remote_adr}:{$_SERVER['REMOTE_PORT']}]");
-if(isset($argv) && is_array($argv)) wg_log_write(WGLOG_INFO,"** ARGV            = ".implode(" ",$argv));
+@wg_log_write(WGLOG_INFO,"** REQUEST_URI     = [{$_SERVER['REQUEST_URI']}]");
+@wg_log_write(WGLOG_INFO,"** REQUEST_METHOD  = [{$_SERVER['REQUEST_METHOD']}] {$_SERVER['SERVER_PROTOCOL']}");
+@wg_log_write(WGLOG_INFO,"** HTTP_USER_AGENT = [{$_SERVER['HTTP_USER_AGENT']}]");
+@wg_log_write(WGLOG_INFO,"** REMOTE          = [{$remote_adr}:{$_SERVER['REMOTE_PORT']}]");
+if(isset($argv) && is_array($argv)) @wg_log_write(WGLOG_INFO,"** ARGV            = ".implode(" ",$argv));
 
 wg_log_write(WGLOG_INFO,"[[ Loaded   framework config : {$wconffile}) ]]");
 
