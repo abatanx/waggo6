@@ -391,7 +391,7 @@ class WGMModel
 			case self::S:
 			case self::B:
 			case self::D: return ($v1===$v2);
-			case self::T: return (wg_timediff($v1,$v2)===0);
+			case self::T: return (wg_timediff_second($v1,$v2)===0);
 			case self::P: return ($v1[0]==$v2[0] && $v1[1]==$v2[1]);
 		}
 		$this->logFatal("Unrecognized field type, '{$key}'.");

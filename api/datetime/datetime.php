@@ -5,6 +5,8 @@
  * @license MIT
  */
 
+require_once( dirname( __FILE__ ) . "/../core/check.php" );
+
 function __datetime_bval($v,$b){return ($b+($v%$b))%$b;}
 
 /**
@@ -461,6 +463,21 @@ function wg_timediff($symdhns,$eymdhns)
 	if( ($edd=wg_split_datetime($eymdhns))===false ) return false;
 	$ss   = __datetime_AD($sdd["yy"],$sdd["mm"],$sdd["dd"])*3600+$sdd["hh"]*60+$sdd["nn"];
 	$ee   = __datetime_AD($edd["yy"],$edd["mm"],$edd["dd"])*3600+$edd["hh"]*60+$edd["nn"];
+	return $ss - $ee;
+}
+
+/**
+ * 秒単位の時間差（日付１−日付２）を計算する。
+ * @param string $symdhns タイムスタンプ(日付1)文字列。
+ * @param string $eymdhns タイムスタンプ(日付2)文字列。
+ * @return int 計算できた場合日付１-日付2を計算した後の時間差(秒)を、それ以外の場合はFalseを返す。
+ */
+function wg_timediff_second($symdhns,$eymdhns)
+{
+	if( ($sdd=wg_split_datetime($symdhns))===false ) return false;
+	if( ($edd=wg_split_datetime($eymdhns))===false ) return false;
+	$ss   = __datetime_AD($sdd["yy"],$sdd["mm"],$sdd["dd"])*86400+$sdd["hh"]*3600+$sdd["nn"]*60+$sdd['ss'];
+	$ee   = __datetime_AD($edd["yy"],$edd["mm"],$edd["dd"])*86400+$edd["hh"]*3600+$edd["nn"]*60+$edd['ss'];
 	return $ss - $ee;
 }
 
