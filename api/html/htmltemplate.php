@@ -143,6 +143,7 @@ ___END___;
 		if ( ! is_dir( $d0 ) )
 		{
 			@mkdir( $d0, 0777 );
+			@chmod( $d0, 0777 );
 			if ( ! is_dir( $d0 ) || ! is_readable( $d0 ) || ! is_writable( $d0 ) )
 			{
 				self::die( sprintf( "Can't create a directory of compiled template cache file.\n%s", htmlspecialchars( $d0 ) ) );
@@ -153,6 +154,7 @@ ___END___;
 		if ( ! is_dir( $d0 ) )
 		{
 			@mkdir( $d0, 0777 );
+			@chmod( $d0, 0777 );
 			if ( ! is_dir( $d0 ) || ! is_readable( $d0 ) || ! is_writable( $d0 ) )
 			{
 				self::die( sprintf( "Can't create a directory of compiled template cache file.\n%s", htmlspecialchars( $d0 ) ) );
@@ -163,6 +165,7 @@ ___END___;
 		{
 			self::die( sprintf( "Can't create a directory of compiled template cache file.\n%s", htmlspecialchars( $fi ) ) );
 		}
+		@chmod( $fi, 0666 );
 
 		return $fi;
 	}
