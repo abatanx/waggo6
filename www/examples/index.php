@@ -5,9 +5,9 @@
  * @license MIT
  */
 
-require_once dirname(__FILE__) . '/../../waggo.php';
+require_once 'waggo_example.php';
 
-class EXIndex extends WGFPCController
+class EXIndex extends EXPCController
 {
 }
 

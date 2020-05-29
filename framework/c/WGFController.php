@@ -517,82 +517,139 @@ abstract class WGFController
 	}
 
 	/**
-	 * call
+	 * スタッカブルトランジションとして、新しい遷移先に遷移する。
+	 *
+	 * @param string $callback 情報を受信するためのコールバックメソッド名
+	 * @param string $url 遷移先URL
+	 * @param mixed $data 遷移先に引き渡す情報
+	 *
+	 * @api Stackable Transition
 	 */
-	protected function call($callback,$url,$data)
+	protected function call( $callback, $url, $data )
 	{
-		// ソースのセッションに、コール用の変数を設定
-		$this->session->__call = array(
-			"source"	=>	$_SERVER["REQUEST_URI"],
-			"callback"	=>	$callback,
-			"data"		=>	serialize($data)
-		);
+		$this->session->__call = [
+			'hash'     => md5( mt_rand() ),
+			'source'   => $_SERVER['REQUEST_URI'],
+			'callback' => $callback,
+			'data'     => serialize( $data )
+		];
 
-		// ディスティネーション呼出
-		$gp = array(WGTransition::TRANSKEYCALL=>implode(",",$this->session->getId()));
-		wg_location(wg_remake_url($url,$gp));
+		$gp = [ WGTransition::TRANSKEYCALL => $this->session->getCombinedId() ];
+		wg_location( wg_remake_url( $url, $gp ) );
 	}
 
-	protected function ret($data)
+	/**
+	 * スタッカブルトランジションとして、呼び出し元に遷移する。
+	 *
+	 * @param mixed $data 遷移元に引き渡す情報
+	 *
+	 * @api Stackable Transition
+	 */
+	protected function ret( $data )
 	{
-		$p  = $this->session->__ret;
-		$ss = new WGFSession($p["sid"],$p["tid"]);
-		$q  = $ss->__call;
-		if(	$q["source"]==$p["source"] && $q["callback"]==$p["callback"] &&
-			$q["source"]!="" && $q["callback"]!="" )
+		$ret         = $this->session->__ret;
+		$source_sess = WGFSession::restoreByCombinedId( $ret['combined'] );
+		if ( $source_sess instanceof WGFSession )
 		{
-			$q["data"] = serialize($data);
-			$ss->__call = $q;
-			$gp = array(WGTransition::TRANSKEYRET=>implode(",",$this->session->getId()));
-			wg_location(wg_remake_url($p["source"],$gp));
+			$call = $source_sess->__call;
+			if ( $call['hash'] === $ret['hash'] )
+			{
+				$ret['data']          = serialize( $data );
+				$this->session->__ret = $ret;
+				$gp                   = [ WGTransition::TRANSKEYRET => $this->session->getCombinedId() ];
+				wg_location( wg_remake_url( $call['source'], $gp ) );
+			}
 		}
-		else
-		{
-			$this->abort("ソースページへの遷移ができませんでした。");
-		}
+		$this->abort( "Can't return to source controller." );
 	}
 
+	/**
+	 * Stackable transition / IPM receiver
+	 */
 	protected function checkIPMReceiver()
 	{
-		if(isset($_GET[WGTransition::TRANSKEYCALL]))
+		$is_reload_required = false;
+
+		if ( isset( $_GET[ WGTransition::TRANSKEYCALL ] ) && strlen( $_GET[ WGTransition::TRANSKEYCALL ] ) == 32 )
 		{
-			$gp = explode(",", $_GET[WGTransition::TRANSKEYCALL]);
-			if(isset($gp[0]) && isset($gp[1]))
+			$ci          = $_GET[ WGTransition::TRANSKEYCALL ];
+			$source_sess = WGFSession::restoreByCombinedId( $ci );
+			if ( $source_sess instanceof WGFSession )
 			{
-				$ss = new WGFSession($gp[0],$gp[1]);
-				$p  = $ss->__call;
-				if(is_array($p))
+				$source_call = $source_sess->__call;
+				if ( is_array( $source_call ) )
 				{
-					$d = unserialize($p["data"]);
-					$this->session->__ret = array(
-						"source"	=>	$p["source"],
-						"callback"	=>	$p["callback"],
-						"sid"		=>	$gp[0],
-						"tid"		=>	$gp[1]
-					);
-					$this->initFirstCall($d);
+					$data                 = unserialize( $source_call['data'] );
+					$this->session->__ret = [
+						'combined' => $ci,
+						'hash'     => $source_call['hash'],
+						'data'     => serialize( null )
+					];
+					$this->initFirstCall( $data );
+					$is_reload_required = true;
 				}
 			}
 		}
-		$_GET[WGTransition::TRANSKEYCALL] = null;
-		unset($_GET[WGTransition::TRANSKEYCALL]);
-		$_SERVER["REQUEST_URI"] = wg_remake_uri(array(WGTransition::TRANSKEYCALL=>null));
+		$_GET[ WGTransition::TRANSKEYCALL ] = null;
+		unset( $_GET[ WGTransition::TRANSKEYCALL ] );
+
+		$uri = wg_remake_uri( [ WGTransition::TRANSKEYCALL => null ] );
+
+		if ( $is_reload_required )
+		{
+			wg_location( $uri );
+		}
+		else
+		{
+			$_SERVER['REQUEST_URI'] = $uri;
+		}
 	}
 
+	/**
+	 * Stackable transition / IPM execute callback
+	 */
 	protected function checkIPMCallback()
 	{
-		if(isset($_GET[WGTransition::TRANSKEYRET]))
+		$is_reload_required = false;
+		if ( isset( $_GET[ WGTransition::TRANSKEYRET ] ) && strlen( $_GET[ WGTransition::TRANSKEYRET ] ) == 32 )
 		{
-			$q = $this->session->__call;
-			if(isset($q))
+			$ci        = $_GET[ WGTransition::TRANSKEYRET ];
+			$dest_sess = WGFSession::restoreByCombinedId( $ci );
+			if ( $dest_sess instanceof WGFSession )
 			{
-				$d = unserialize($q["data"]);
-				call_user_func(array($this,$q["callback"]), $d);
+				$source_call = $this->session->__call;
+				$dest_ret    = $dest_sess->__ret;
+				if ( isset( $dest_ret['hash'] ) && isset( $source_call['hash'] ) &&
+					 $dest_ret['hash'] === $source_call['hash'] )
+				{
+					$d = unserialize( $dest_ret['data'] );
+					if ( ! method_exists( $this, $source_call['callback'] ) )
+					{
+						$this->abort( "Can't resolve to callback method." );
+					}
+					else
+					{
+						call_user_func( [ $this, $source_call['callback'] ], $d );
+					}
+				}
+				$dest_sess->cleanup();
+				$is_reload_required = true;
 			}
 		}
-		$_GET[WGTransition::TRANSKEYRET] = null;
-		unset($_GET[WGTransition::TRANSKEYRET]);
-		$_SERVER["REQUEST_URI"] = wg_remake_uri(array(WGTransition::TRANSKEYRET=>null));
+
+		$_GET[ WGTransition::TRANSKEYRET ] = null;
+		unset( $_GET[ WGTransition::TRANSKEYRET ] );
+
+		$uri = wg_remake_uri( [ WGTransition::TRANSKEYRET => null ] );
+
+		if ( $is_reload_required )
+		{
+			wg_location( $uri );
+		}
+		else
+		{
+			$_SERVER['REQUEST_URI'] = $uri;
+		}
 	}
 
 	/**

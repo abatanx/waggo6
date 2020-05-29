@@ -8,7 +8,7 @@
 class WGFSession
 {
 	static $isOpenSession = False;
-	protected $sessionid, $transactionid;
+	protected $sessionid, $transactionid, $combinedid;
 
 	/**
 	 * 固有セッション管理インスタンスを作成する。
@@ -17,6 +17,36 @@ class WGFSession
 	 */
 	public function __construct($sessionid,$transactionid) {
 		$this->setId($sessionid,$transactionid);
+	}
+
+	/**
+	 * 固有セッション管理インスタンスを結合キーから復帰する。
+	 * @param string $combinedid 結合キー
+	 * @return WGFSession|bool 成功した場合は復元した固有セッション管理インスタンスを、失敗した場合は false を返す。
+	 */
+	static public function restoreByCombinedId($combinedid)
+	{
+		if( is_array($_SESSION) )
+		{
+			$key_s = array_keys($_SESSION);
+			foreach( $key_s as $ks )
+			{
+				if( is_array($_SESSION[$ks]) )
+				{
+					$key_t = array_keys($_SESSION[$ks]);
+					foreach( $key_t as $kt )
+					{
+						if( is_array($_SESSION[$ks][$kt])
+							&& @isset($_SESSION[$ks][$kt]['%combined'])
+							&& $_SESSION[$ks][$kt]['%combined'] === $combinedid )
+						{
+							return new WGFSession($ks,$kt);
+						}
+					}
+				}
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -66,13 +96,21 @@ class WGFSession
 	public function setId($sessionid,$transactionid) {
 		$this->sessionid     = $sessionid;
 		$this->transactionid = $transactionid;
+		$this->combinedid    = md5($this->transactionid . ' @ ' . $this->sessionid);
 		if(!isset($_SESSION[$this->sessionid][$this->transactionid]) || !is_array($_SESSION[$this->sessionid][$this->transactionid]))
 			$_SESSION[$this->sessionid][$this->transactionid] = array();
 
 		$_SESSION[$this->sessionid][$this->transactionid]["%atime"] = time();
+		$_SESSION[$this->sessionid][$this->transactionid]["%combined"] = $this->combinedid;
 
 		if(WG_SESSIONDEBUG) wg_log_write(WGLOG_INFO,"[[[ waggo SESSION started, {$this->sessionid} {$this->transactionid} ]]]");
 	}
+
+	/**
+	 * 固有セッション管理IDのうち、複合IDを取得する。
+	 * @return string 結合ID
+	 */
+	public function getCombinedId()		{	return $this->get('%combined');	}
 
 	/**
 	 * 固有セッション管理IDのうち、セッション管理IDを取得する。
