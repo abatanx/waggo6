@@ -137,8 +137,8 @@ class WGV6BasicPagination extends WGV6Object
 		$this->pageKey  = $pagekey;
 		$this->limitKey = $limitkey;
 
-		$this->page     = (!wg_inchk_int($this->page ,$_GET[$this->pageKey],1))  ? 1      : $this->page   ;
-		$this->limit    = (!wg_inchk_int($this->limit,$_GET[$this->limitKey],1)) ? $limit : $this->limit  ;
+		$this->page     = (!@wg_inchk_int($this->page ,$_GET[$this->pageKey],1))  ? 1      : $this->page   ;
+		$this->limit    = (!@wg_inchk_int($this->limit,$_GET[$this->limitKey],1)) ? $limit : $this->limit  ;
 
 		if( !in_array($this->limit, array_keys($this->limitList)) ) $this->limit = $this->pagingLineNums()[0];
 	}
