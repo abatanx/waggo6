@@ -213,21 +213,28 @@ $WG_MIMETYPES=array("tsp"=>"application/dsptype",
 			"vrt"=>"x-world/x-vrt"
 );
 
+/**
+ * @param $mimetype
+ * @return bool
+ * @see https://www.iana.org/assignments/media-types/media-types.xhtml
+ */
+
 function wg_mimetype_is_image($mimetype)
 {
-	$p = array(
-		"image/jpeg","image/pjpeg","image/png","image/gif"
-	);
-	return in_array($mimetype,$p);
+	@list($p) = explode('/', $mimetype);
+	return !empty($p) && strtolower($p) === 'image';
 }
 
 function wg_mimetype_is_movie($mimetype)
 {
-	$p = array(
-		"video/mpeg","video/quicktime","video/quicktime","video/x-msvideo","video/x-ms-asf",
-		"video/x-ms-wmv","video/x-ms-wmx","video/x-ms-wvx","video/3gpp","video/3gpp2","video/mp4","video/x-flv"
-	);
-	return in_array($mimetype,$p);
+	@list($p) = explode('/', $mimetype);
+	return !empty($p) && strtolower($p) === 'video';
+}
+
+function wg_mimetype_is_audio($mimetype)
+{
+	@list($p) = explode('/', $mimetype);
+	return !empty($p) && strtolower($p) === 'audio';
 }
 
 function wg_mimetype_is_pdf($mimetype)
