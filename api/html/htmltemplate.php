@@ -76,6 +76,11 @@ class HtmlTemplateEncoder
 	{
 		return json_encode( self::cleanup( $data ) );
 	}
+
+	public function _v( $data )
+	{
+		return $data;
+	}
 }
 
 class HtmlTemplate
@@ -339,6 +344,8 @@ ___END___;
 		/**
 		 * <!--{def n}-->
 		 * <!--{ndef n}-->
+		 * <!--{elsedef n}-->
+		 * <!--{elsendef n}-->
 		 * <!--{else}-->
 		 * <!--{/def}-->
 		 */
@@ -346,6 +353,13 @@ ___END___;
 			function ( $state ) {
 				return self::__CODE__(
 					'if(((isset(%1$s) && !is_array(%1$s) && !empty(%1$s)) or (isset(%1$s) && is_array(%1$s) && count(%1$s)>0)) xor %2$s){',
+					$state->var, ( $state->match[1] !== '' ) ? 'true' : 'false'
+				);
+			} );
+		self::parser( $code, self::__RE__( '<!--{else(n?)def (.+?)}-->' ), 2, $each_targets, false,
+			function ( $state ) {
+				return self::__CODE__(
+					'} else if(((isset(%1$s) && !is_array(%1$s) && !empty(%1$s)) or (isset(%1$s) && is_array(%1$s) && count(%1$s)>0)) xor %2$s) {',
 					$state->var, ( $state->match[1] !== '' ) ? 'true' : 'false'
 				);
 			} );
@@ -431,13 +445,13 @@ ___END___;
 		/**
 		 * {$n}
 		 */
-		$immediate_references = [];
-		self::parser( $code, self::__RE__( '{\$(.+?)}' ), 1, $each_targets, false, function ( $state ) use (&$immediate_references) {
-			$immediate_var = sprintf('$__IRF%d__', count($immediate_references));
-			$immediate_references[] = sprintf('%s=&%s;', $immediate_var, $state->var);
-			return $immediate_var;
+		$immediate_references = false;
+		self::parser( $code, self::__RE__( '{\$(.+?)}' ), 1, $each_targets, false,
+			function ( $state ) use (&$immediate_references) {
+				$immediate_references = true;
+				return sprintf('$__IRF__->_v(%s)', $state->var );
 		} );
-		if( count($immediate_references) > 0 ) $code = self::__CODE__(implode("", $immediate_references)) . $code;
+		if( $immediate_references ) $code = self::__CODE__('$__IRF__=new HTE();') . $code;
 		unset($immediate_references);
 
 		/**
