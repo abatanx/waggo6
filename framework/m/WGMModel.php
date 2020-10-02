@@ -314,6 +314,7 @@ class WGMModel
 		if(!is_array($initymds)||!is_array($updymds)) $this->logFatal("setAutoTimestamp is not an array");
 		$this->initymds = $initymds;
 		$this->updymds  = $updymds;
+		return $this;
 	}
 
 	public function getRecs()
