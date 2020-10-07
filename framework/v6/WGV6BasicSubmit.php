@@ -30,20 +30,21 @@ class WGV6BasicSubmit extends WGV6Basic
 		}
 		else
 		{
+			$hiddenId = $id . "_wg_post";
 			if( !$c->isScriptBasedController() )
 			{
 				$c->runJS(
 					"\$('#{$id}').click(function(){".
-					"\$(this).after(\$('<input>').attr({type:'hidden',value:$(this).val(),name:\$(this).attr('name')}));".
-					"\$(this).closest('form').submit();});", $x
+					"\$(this).after(\$('<input>').attr({id:'{$hiddenId}',type:'hidden',value:$(this).val(),name:\$(this).attr('name')}));".
+					"\$(this).closest('form').submit();\$('#{$hiddenId}').remove()});", $x
 				);
 			}
 			else
 			{
 				$c->runJS(
 					"\$('#{$id}').click(function(){".
-					"\$(this).after(\$('<input>').attr({type:'hidden',value:$(this).val(),name:\$(this).attr('name')}));".
-					"WG6.post(WG6.closestForm(\$(this)),'{$c->getNextURL()}');});", $x
+					"\$(this).after(\$('<input>').attr({id:'{$hiddenId}',type:'hidden',value:$(this).val(),name:\$(this).attr('name')}));".
+					"WG6.post(WG6.closestForm(\$(this)),'{$c->getNextURL()}');\$('#{$hiddenId}').remove()});", $x
 				);
 			}
 		}
