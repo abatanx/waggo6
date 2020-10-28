@@ -77,7 +77,7 @@ function wg_create_seqid( $usercd = null )
 	if ( ! is_null( $usercd ) )
 	{
 		_Q(
-			"INSERT INTO owner(id,usercd,initymd,updymd,enable) " .
+			"INSERT INTO owner(id,usercd,initymd,updymd,enabled) " .
 			"VALUES(%d,%d,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,true);",
 			_N( $newid ), _N( $usercd ) );
 	}
