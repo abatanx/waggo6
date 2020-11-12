@@ -301,12 +301,46 @@ class WGMModel
 	public function getPrimaryKeys()
 	{	return $this->initFieldsPrimarykey($this->tablename);					}
 
-	public function expansion($exp)
+	private function _expansion_old($exp)
 	{
 		$alias = $this->getAlias();
 		$cb = function($m) use ($alias) { return $alias.".".$m[1]; };
 		$exp = preg_replace_callback('/\{(\w+?)\}/', $cb, $exp);
 		return $exp;
+	}
+
+	public function expansion($exp)
+	{
+		$r = [];
+		$t = '';
+		$s = preg_split('//u', $exp, -1, PREG_SPLIT_NO_EMPTY);
+
+		$get   = function(&$a) { return count($a) > 0 ? array_shift($a) : '' ; };
+		$peek  = function($a)  { return count($a) > 0 ? $a[0] : ''; };
+		$queue = function($f, &$r, &$t, $c = '') { if( $t !== '' ) $r[] = [$f, $t]; $t = $c; };
+
+		while( count($s) > 0 )
+		{
+			$c = $get($s);
+			if( $c === '\'' )
+			{
+				$x = $c;
+				$queue(1, $r, $t, $c);
+				do {
+					$c = $get($s);
+					$d = $peek($s);
+					if( ($c === $x && $d === $x) || $c === '\\' ) $c .= $get($s);
+					$t .= $c;
+				}
+				while( $c !== '' && $c !== $x );
+				$queue(0, $r, $t);
+			}
+			else $t .= $c;
+		}
+		$queue(1, $r, $t);
+
+		$g = function($m) { return $this->getAlias().".".$m[1]; };
+		return implode('', array_map(function($v) use ($g) { return $v[0] === 1 ? preg_replace_callback('/{(\w+?)}/', $g, $v[1]) : $v[1]; }, $r));
 	}
 
 	public function setAutoTimestamp($initymds=array("initymd"),$updymds=array("updymd"))
@@ -535,9 +569,16 @@ class WGMModel
 			}
 			else
 			{
-				$e = explode(" ",$k);
-				$e[0] = $this->getAlias().".{$e[0]}";
-				$orders[] = implode(" ",$e);
+				if( preg_match('/^(\w+)(\s+\w+)?$/', trim($k), $m) )
+				{
+					$e = [trim($m[1]), trim($m[2] ?? '')];
+					$e[0] = $this->getAlias().".{$e[0]}";
+					$orders[] = implode(" ",$e);
+				}
+				else
+				{
+					$orders[] = $this->expansion($k);
+				}
 			}
 		}
 
