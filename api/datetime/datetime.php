@@ -276,7 +276,7 @@ function wg_datetime_checktime($time)
 	$time = trim($time);
 	$hh = $mm = $ss = 0;
 	if(     preg_match('/^(\d{1,2}):(\d{1,2}):(\d{1,2})/',$time,$m))	list(,$hh,$mm,$ss) = $m;
-	else if(preg_match('/^(\d{1,2}):(\d{1,2})',$time,$m))				list(,$hh,$mm) = $m;
+	else if(preg_match('/^(\d{1,2}):(\d{1,2})/',$time,$m))				list(,$hh,$mm) = $m;
 	else return false;
 
 	// 10進整数に念のため変換 (0で始まる場合の 8進数扱い)
