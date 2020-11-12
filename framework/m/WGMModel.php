@@ -301,14 +301,6 @@ class WGMModel
 	public function getPrimaryKeys()
 	{	return $this->initFieldsPrimarykey($this->tablename);					}
 
-	private function _expansion_old($exp)
-	{
-		$alias = $this->getAlias();
-		$cb = function($m) use ($alias) { return $alias.".".$m[1]; };
-		$exp = preg_replace_callback('/\{(\w+?)\}/', $cb, $exp);
-		return $exp;
-	}
-
 	public function expansion($exp)
 	{
 		$r = [];
