@@ -251,7 +251,7 @@ class WGDBMSPostgreSQL extends WGDBMS
 	{
 		if($anl && (is_null($d)||$d===false||$d==="")) return "null";
 		else if($anl && $d===false) return "null";
-		else if(preg_match("/^(current|epoch|-?infinity|invalid|now|today|tomorrow|yesterday|zulu|allballs|z)/i",$d)) return $d;
+		else if(preg_match("/^(current|localtime|epoch|-?infinity|invalid|now|today|tomorrow|yesterday|zulu|allballs|z)/i",$d)) return $d;
 		else return self::S($d);
 	}
 

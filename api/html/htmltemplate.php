@@ -419,8 +419,7 @@ ___END___;
 				if ( count( $s ) > 0 )
 				{
 					list( $k, $e ) = explode( ':', array_pop( $s ) );
-					$state->e = '.\':' . addslashes($e) . '\'';
-
+					$state->e = !empty($e) ? '.\':' . addslashes($e) . '\'' : '';
 					return implode( '/', array_merge( $s, [ $k ] ) );
 				}
 				else
