@@ -62,7 +62,6 @@ class WGFJSONController extends WGFController
 
 	protected function abort($msg=false)
 	{
-		http_response_code(500);
 		$this->renderJSON($msg);
 		exit;
 	}
