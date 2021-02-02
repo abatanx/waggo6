@@ -425,6 +425,7 @@ abstract class WGFController
 		$this->initConnectors($this->connectors());
 		$this->beforeInitFirstAndInit();
 		$this->init();
+		$this->afterInitAndInitFirst();
 		$this->checkIPMCallback();		// FOR SRC PAGE
 		$this->clearError();
 	}

@@ -39,6 +39,9 @@ wg_log_write(WGLOG_INFO,"** Server          = [".php_uname("a")."]");
 @wg_log_write(WGLOG_INFO,"** REMOTE          = [{$remote_adr}:{$_SERVER['REMOTE_PORT']}]");
 if(isset($argv) && is_array($argv)) @wg_log_write(WGLOG_INFO,"** ARGV            = ".implode(" ",$argv));
 
+// Save for original request URI
+if( isset($_SERVER['REQUEST_URI']) ) $_SERVER['X_ORIGINAL_REQUEST_URI'] = $_SERVER['REQUEST_URI'];
+
 wg_log_write(WGLOG_INFO,"[[ Loaded   framework config : {$wconffile}) ]]");
 
 require_once(dirname(__FILE__)."/api/http/http.php");
