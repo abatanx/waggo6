@@ -42,7 +42,7 @@ class WGV6BasicCheckElement extends WGV6BasicElement
 
 		if( $this->isLock() || $c->getInputType()==$c::SHOWHTML )
 		{
-			$c->runJS("\$('#{$id}').attr({disabled:'disabled'});", $x);
+			$c->runJS("\$('#{$id}, #{$id}-init').attr({disabled:'disabled'});", $x);
 		}
 	}
 
