@@ -142,12 +142,12 @@ class WGDBMSPostgreSQL extends WGDBMS
 	/**
 	 * @inheritdoc
 	 */
-	public function OK() { return ($this->query);  }
+	public function OK() { return !!$this->query;  }
 
 	/**
 	 * @inheritdoc
 	 */
-	public function NG() { return (!$this->query); }
+	public function NG() { return !$this->query; }
 
 	/**
 	 * @inheritdoc
