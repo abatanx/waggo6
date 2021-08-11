@@ -22,8 +22,16 @@ function wgdie($msg)
 	}
 }
 
-$wconfport = $_SERVER["SERVER_PORT"] != 80 ? ".${_SERVER['SERVER_PORT']}" : "";
-$wconffile = __DIR__ . "/../config/waggo.{$_SERVER['SERVER_NAME']}{$wconfport}.php";
+if( isset($_SERVER['WAGGO_FORCE_CONFIG']) && strlen($_SERVER['WAGGO_FORCE_CONFIG']) > 0 )
+{
+	$wconffile = __DIR__ . "/../config/waggo.{$_SERVER['WAGGO_FORCE_CONFIG']}.php";
+}
+else
+{
+	$wconfport = $_SERVER["SERVER_PORT"] != 80 ? ".${_SERVER['SERVER_PORT']}" : "";
+	$wconffile = __DIR__ . "/../config/waggo.{$_SERVER['SERVER_NAME']}{$wconfport}.php";
+}
+
 if(!file_exists($wconffile)) wgdie("'{$wconffile}' doesn't exist.\n");
 else require_once($wconffile);
 
