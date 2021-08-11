@@ -1,0 +1,26 @@
+<form action="{@form:action}" method="{@form:method}" enctype="{@form:enctype}">
+	<main class="container">
+		<table class="table">
+			<tbody>
+<!--{each lists}-->
+			<tr>
+				<td>
+					<input type="text" id="{%lists/a:id}" name="{%lists/a:name}" value="{%lists/a:value}">
+				</td>
+				<td>
+					<input type="text" id="{%lists/b:id}" name="{%lists/b:name}" value="{%lists/b:value}">
+				</td>
+				<td>
+					{nval lists/c}
+				</td>
+			</tr>
+<!--{/each}-->
+			</tbody>
+		</table>
+
+		<p>
+			<input type="submit" name="{@submit:name}" id="{@submit:id}" value="SUBMIT">
+		</p>
+	</main>
+</form>
+
