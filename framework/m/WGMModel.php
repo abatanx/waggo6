@@ -437,7 +437,7 @@ class WGMModel
 		if(isset($this->assign[$k]["viewobj"]) && !$this->assign[$k]["viewobj"]->isShowOnly())
 			return $this->assign[$k]["filter"]->input($this->assign[$k]["filter"]->viewToModel($this->assign[$k]["viewobj"]));
 		else
-			return $this->vars[$k];
+			return $this->vars[$k] ?? null;
 	}
 
 	public function unJoin()
