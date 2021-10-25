@@ -5,6 +5,8 @@
  * @license MIT
  */
 
+require_once __DIR__ . '/encoding.php';
+
 class WGMailParser
 {
 	protected $plain, $header, $body;
@@ -22,8 +24,8 @@ class WGMailParser
 
 		$this->headers          = array();
 		$this->content_type     = "";
-		$this->content_encoding = "iso-2022-jp";
-		$this->content_charset  = "iso-2022-jp";
+		$this->content_encoding = WGCONF_SMTP_ENCODING;
+		$this->content_charset  = WGCONF_SMTP_ENCODING;
 		$this->content_params   = array();
 	}
 
@@ -50,17 +52,17 @@ class WGMailParser
 			switch ( $hk )
 			{
 				case "content-type":
-					$p                     = explode( ";", $hv );
-					$d                     = array_shift( $p );
-					$this->content_type    = strtolower( trim($d) );
-					$this->content_params  = array();
+					$p                    = explode( ";", $hv );
+					$d                    = array_shift( $p );
+					$this->content_type   = strtolower( trim( $d ) );
+					$this->content_params = array();
 					foreach ( $p as $d )
 					{
 						list( $k, $v ) = explode( "=", trim( $d ), 2 );
 						$this->content_params[ strtolower( $k ) ] = $v;
 					}
 
-					if( isset($this->content_params['charset']) )
+					if ( isset( $this->content_params['charset'] ) )
 					{
 						$this->content_charset = $this->content_params['charset'];
 					}
@@ -130,7 +132,7 @@ class WGMailParser
 		// マルチパート解析
 		if ( $this->content_type == "multipart/form-data" )
 		{
-			$boundary = isset($this->content_params['boundary']) ? $this->content_params['boundary'] : '';
+			$boundary       = isset( $this->content_params['boundary'] ) ? $this->content_params['boundary'] : '';
 			$bounding_array = explode( "--" . $boundary, $this->body );
 			$result         = array();
 			foreach ( $bounding_array as $id => $bounding_body )
@@ -141,7 +143,7 @@ class WGMailParser
 				}
 
 				$boundary_body = new WGMailParser( $bounding_body );
-				$r = $boundary_body->analyze();
+				$r             = $boundary_body->analyze();
 				foreach ( $r as $key => $body )
 				{
 					$result[] = $body;
@@ -154,11 +156,11 @@ class WGMailParser
 		//
 		if ( $this->content_encoding == "base64" )
 		{
-			$body    = base64_decode( $this->body );
+			$body = base64_decode( $this->body );
 		}
 		else
 		{
-			$body    = $this->body;
+			$body = $this->body;
 		}
 
 		$subject = iconv_mime_decode( $this->subject );
@@ -190,7 +192,7 @@ class WGMailParser
 				$body = strip_tags( mb_convert_encoding( $body, "utf-8", $this->content_charset ) );
 				break;
 			default:
-				$ext  = "txt";
+				$ext = "txt";
 		}
 
 		$this->body    = $body;

@@ -54,6 +54,7 @@ define( 'WGCONF_SMTP_AUTH'					,	false );
 define( 'WGCONF_SMTP_AUTH_USERNAME'			,	'' );
 define( 'WGCONF_SMTP_AUTH_PASSWORD'			,	'' );
 define( 'WGCONF_SMTP_LOCALHOST'				,	'localhost' );
+define( 'WGCONF_SMTP_ENCODING'				,	'iso-2022-jp' );
 
 define( 'WGCONF_SMTP_TEST'					,	false );
 define( 'WGCONF_SMTP_TEST_RCPTTO'			,	'root@localhost' );
