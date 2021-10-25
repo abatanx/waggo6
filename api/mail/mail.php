@@ -115,7 +115,7 @@ class WGMail
 		$headers["Errors-To"]                 = $this->mail_error_to;
 		$headers["Reply-To"]                  = $this->mail_reply_to;
 		$headers["Date"]                      = date( "r" ); // RFC822
-		$headers["Content-Type"]              = 'text/plain; charset="' . WGCONF_SMTP_ENCODING . '"';
+		$headers["Content-Type"]              = 'text/plain; charset="' . WGCONF_SMTP_ENCODING_CHARSET . '"';
 		$headers["Content-Transfer-Encoding"] = '7bit';
 		$headers["MIME-Version"]              = '1.0';
 		$headers["X-Mailer"]                  = "waggo WGMail API ver.1.0";
@@ -222,7 +222,7 @@ class WGMail
 		$headers["Errors-To"]                 = $err;
 		$headers["Reply-To"]                  = $from;
 		$headers["Date"]                      = date( "r" ); // RFC822
-		$headers["Content-Type"]              = 'text/plain; charset="' . WGCONF_SMTP_ENCODING . '"';
+		$headers["Content-Type"]              = 'text/plain; charset="' . WGCONF_SMTP_ENCODING_CHARSET . '"';
 		$headers["Content-Transfer-Encoding"] = '7bit';
 		$headers["MIME-Version"]              = '1.0';
 		$headers["X-Mailer"]                  = "waggo postmail API ver.5.0";

@@ -9,3 +9,8 @@ if ( ! defined( 'WGCONF_SMTP_ENCODING' ) )
 {
 	define( 'WGCONF_SMTP_ENCODING', 'iso-2022-jp' );
 }
+
+if ( ! defined( 'WGCONF_SMTP_ENCODING_CHARSET' ) )
+{
+	define( 'WGCONF_SMTP_ENCODING_CHARSET', 'iso-2022-jp' );
+}
