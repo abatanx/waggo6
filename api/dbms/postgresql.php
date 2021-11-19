@@ -61,7 +61,7 @@ class WGDBMSPostgreSQL extends WGDBMS
 		if( $this->PORT  !=0  ) $params[] = "port={$this->PORT}";
 
 		$param = implode(" ",$params);
-		$this->connection = @pg_connect($param);
+		$this->connection = @pg_connect($param, PGSQL_CONNECT_FORCE_NEW);
 		if(!$this->connection) wgdie("Database connection error.");
 		return true;
 	}
