@@ -12,7 +12,8 @@ WG6.opts = function(opts)
 };
 WG6.beforeLoad = function(jqs) {};
 WG6.afterLoad = function(jqs) {};
-
+WG6.beforeComplete = function (jqs) {};
+WG6.afterComplete = function (jqs) {};
 WG6.remakeURI = function(uri,opts)
 {
 	var k,p,a,t,r,q,u;
@@ -117,8 +118,10 @@ WG6.get = function(jqs,url,opts) {
 			WG6.beforeLoad(jqs);
 		},
 		complete: function (jqx) {
+			if (opts.beforeComplete != null) opts.beforeComplete(jqs)
 			WG6.afterLoad(jqs);
 			WG6.parse(jqs, jqx, url, opts);
+			if (opts.afterComplete != null) opts.afterComplete(jqs)
 		},
 		error: function () {
 			WG6.afterLoad(jqs);
@@ -137,8 +140,10 @@ WG6.post = function(jqs,url,opts) {
 			WG6.beforeLoad(jqs);
 		},
 		complete: function (jqx) {
+			if (opts.beforeComplete != null) opts.beforeComplete(jqs)
 			WG6.afterLoad(jqs);
 			WG6.parse(jqs, jqx, url, opts);
+			if (opts.afterComplete != null) opts.afterComplete(jqs)
 		},
 		error: function () {
 			WG6.afterLoad(jqs);
