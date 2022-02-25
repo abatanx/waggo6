@@ -60,8 +60,14 @@ if(wg_is_mobile())
 	require_once(dirname(__FILE__)."/api/mobile/device.php");
 }
 
-foreach($_GET  as $k=>$v) wg_log_write(WGLOG_INFO,"## GET  ".sprintf("%-10s = %s","[$k]","[$v]"));
-foreach($_POST as $k=>$v) wg_log_write(WGLOG_INFO,"## POST ".sprintf("%-10s = %s","[$k]","[$v]"));
+foreach ( $_GET as $k => $v )
+{
+	wg_log_write( WGLOG_INFO, "## GET  %-10s = %s", "[$k]", var_export( $v, true ) );
+}
+foreach ( $_POST as $k => $v )
+{
+	wg_log_write( WGLOG_INFO, "## POST %-10s = %s", "[$k]", var_export( $v, true ) );
+}
 
 require_once(dirname(__FILE__)."/api/core/autoload.php");
 require_once(dirname(__FILE__)."/api/core/quotemeta.php");
