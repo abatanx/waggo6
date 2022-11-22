@@ -414,7 +414,7 @@ class WGMModel
 	{
 		switch($this->fields[$key][0])
 		{
-			case self::N: return ($v1==$v2);
+			case self::N: return ( (string) $v1 === (string) $v2 );
 			case self::S:
 			case self::B:
 			case self::D: return ($v1===$v2);
